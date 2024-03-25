@@ -12,6 +12,12 @@
 .fs30{
   font-size: 30px;
 }
+.fs25{
+  font-size: 25px;
+}
+.fs14{
+  font-size: 14px;
+}
 .fwBold{
   font-weight: bold;
 }
@@ -24,4 +30,11 @@
 .taCenter{
   text-align: center;
 }
+.taLeft{
+  text-align: left;
+}
+.taRight{
+  text-align: right;
+}
+
 </style>

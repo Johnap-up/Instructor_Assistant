@@ -1,5 +1,5 @@
 import axios from "axios";
-import {ElMessage} from "element-plus";
+// import {ElMessage} from "element-plus";
 
 const authItemName = "access_token";
 const defaultFailure = (message, code, url) => {
@@ -12,8 +12,9 @@ const defaultError = (err) => {
 }
 function takeAccessToken(){
     const str = localStorage.getItem(authItemName)||sessionStorage.getItem(authItemName);
-    if (str === null)
+    if (str === null){
         return null;
+    }
     const authObj = JSON.parse(str);
     if(authObj.expire <= new Date()){
         deleteAccessToken();
@@ -23,6 +24,16 @@ function takeAccessToken(){
     return authObj.token;
 }
 
+function accessHeader(){
+    let str = takeAccessToken();
+    return str ? {'Authorization': `Bearer ${str}`} : {};
+}
+function get(url, success, failure=defaultFailure){
+    internalGet(url, accessHeader(), success, failure);
+}
+function post(url, data, success, failure=defaultFailure){
+    internalPost(url, data, accessHeader(), success, failure);
+}
 function storeAccessToken(token, remember, expire){
     const authObj = {token: token, expire: expire}
     const str = JSON.stringify(authObj);
@@ -53,7 +64,6 @@ function internalPost(url, data, header, success, failure, error = defaultError)
                 message: '发生了一些错误, 请联系管理员',
                 type: 'error',
             })
-            console.log("hhhhhhhhhhhhh")
         }
     })
 }
@@ -85,5 +95,16 @@ function login(username, password, remember, success, failure = defaultFailure){
         success(data);
     },failure)
 }
+function logout(success, failure = defaultFailure){
+    get("/api/auth/logout",()=>{
+        deleteAccessToken();
+        ElMessage.success("退出登录成功，欢迎您在再次使用");
+        success();
+    },failure)
+}
 
-export {login};
+function unauthorized(){
+    return !takeAccessToken();
+}
+
+export {login, logout, post, get, unauthorized};

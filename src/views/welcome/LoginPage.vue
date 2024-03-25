@@ -1,5 +1,6 @@
 <script setup>
 import {Lock, User} from "@element-plus/icons-vue";
+import router from "@/router/index.js";
 import {reactive, ref} from "vue";
 import {login} from "@/net/index.js"
 
@@ -21,8 +22,7 @@ const rule = {
 function userLogin(){
   formRef.value.validate((valid) => {
     if (valid){
-      console.log(valid + "jhjjjjjjjjjj");
-      login(form.username, form.password, form.rememberMe, ()=>{})
+      login(form.username, form.password, form.rememberMe, ()=>{router.push("/index")})
     }
   })
 }
@@ -31,8 +31,8 @@ function userLogin(){
 <template>
   <div class="taCenter" style="margin: 0 20px">
     <div style="margin-top: 150px">
-      <div style="font-size: 25px; font-weight: bold">登录</div>
-      <div style="font-size: 14px;color: grey" class="mt10">请输入用户名和密码</div>
+      <div class="fwBold fs25">登录</div>
+      <div style="color: grey" class="mt10 fs14">请输入用户名和密码</div>
     </div>
     <div style="margin-top: 50px">
       <el-form :model="form"  ref="formRef" :rules="rule">
@@ -51,12 +51,12 @@ function userLogin(){
           </el-input>
         </el-form-item>
         <el-row>
-          <el-col :span="12" style="text-align: left">
+          <el-col :span="12" class="taLeft">
             <el-form-item prop="rememberMe">
               <el-checkbox v-model="form.rememberMe" label="记住我" size="large" />
             </el-form-item>
           </el-col>
-          <el-col :span="12" style="text-align: right">
+          <el-col :span="12" class="taRight">
             <div style="height: 40px;margin-bottom: 18px;display: flex;align-items: center;justify-content: right;">
               <el-link type="primary">忘记密码?</el-link>
             </div>
@@ -71,7 +71,7 @@ function userLogin(){
       <span style="font-size: 13px;color: grey">没有账号</span>
     </el-divider>
     <div>
-      <el-button style="width: 270px" type="warning" plain>立即注册</el-button>
+      <el-button style="width: 270px" type="warning" plain @click="router.push('/register')">立即注册</el-button>
     </div>
 
   </div>

@@ -14,9 +14,13 @@ import YaZi from '@/assets/image/YaZi.png';
       </div>
     </div>
     <div class="rightCard">
-      <router-view/>
+<!--      还不知道原理-->
+      <router-view v-slot="{ Component }">
+        <transition name="el-fade-in-linear" mode="out-in">
+          <component :is="Component"/>
+        </transition>
+      </router-view>
     </div>
-
   </div>
 
 </template>
