@@ -106,6 +106,7 @@ function resetPassword() {
       <div style="margin-top: 50px">
         <div style="font-size: 25px;font-weight: bold">重置密码</div>
         <div style="font-size: 14px;color: grey;margin-top: 20px">请输入要重置的密码的电子邮件地址</div>
+        <el-link type="info" style="font-size: 16px" @click="router.push('/')">返回登录</el-link>
       </div>
       <div style="margin-top: 50px">
         <el-form :model="form" ref="formRef" :rules="rule">

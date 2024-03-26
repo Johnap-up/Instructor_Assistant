@@ -1,6 +1,9 @@
 <script setup>
 import YaZi from '@/assets/image/YaZi.png';
+import { useDark, useToggle } from '@vueuse/core'
 
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
 </script>
 
 <template>
@@ -8,6 +11,8 @@ import YaZi from '@/assets/image/YaZi.png';
     <div class="imageBox">
       <el-image :src="YaZi" fit="cover" style="width: 100%; height: 100%"></el-image>
       <div class="welcomeTitle">
+        <span @click.stop="toggleDark()">暗黑模式</span>
+        <el-switch size="small" v-model="isDark"/>
         <div class="fw30 fwBold ">欢迎来到导员助手</div>
         <div class="mt10">在这里你可以方便的管理本学院的学生信息, 并将统计信息导出</div>
         <div class="mt5">其他功能包括学生日常任务发布, 青年大学习统计, 失物招领, 线上查寝等</div>
@@ -22,7 +27,6 @@ import YaZi from '@/assets/image/YaZi.png';
       </router-view>
     </div>
   </div>
-
 </template>
 
 <style scoped>
@@ -40,7 +44,7 @@ import YaZi from '@/assets/image/YaZi.png';
 }
 .rightCard{
   width: 400px;
-  background-color: white;
+  background-color: var(--el-bg-color);
 }
 .welcomeTitle{
   position: absolute;

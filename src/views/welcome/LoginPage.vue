@@ -7,7 +7,7 @@ import {login} from "@/net/index.js"
 const form = reactive({
   username: '',
   password: '',
-  rememberMe: false
+  rememberMe: false         //通过localStorage来保存Authorization
 })
 const formRef = ref();
 const rule = {
