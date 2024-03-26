@@ -71,9 +71,9 @@ function askCode() {
       myTime.time = 60;
       myTime.consumeTime();
       ElMessage.success(`验证码已发送至${form.email}, 请注意查收`);
-    }, () => {
+    }, (message) => {
       myTime.time = 0;
-      ElMessage.error("验证码发送失败, 请检查邮件地址或联系管理员")
+      ElMessage.warning(message)
     })
   } else {
     ElMessage.warning("请输入正确的邮箱地址")
@@ -168,7 +168,6 @@ function register() {
       <el-link type="info" style="font-size: 16px" @click="router.push('/')">已有账号? 立即登录</el-link>
     </div>
   </div>
-
 </template>
 
 <style scoped>

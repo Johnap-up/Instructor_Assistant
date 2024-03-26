@@ -36,5 +36,8 @@
 .taRight{
   text-align: right;
 }
+.usNone{
+  user-select: none;
+}
 
 </style>

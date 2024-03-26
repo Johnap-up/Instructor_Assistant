@@ -37,7 +37,7 @@ function userLogin(){
     <div style="margin-top: 50px">
       <el-form :model="form"  ref="formRef" :rules="rule">
         <el-form-item prop="username">
-          <el-input v-model="form.username" maxlength="10" type="text" placeholder="用户名/邮箱">
+          <el-input v-model="form.username" type="text" placeholder="用户名/邮箱">
             <template #prefix>
               <el-icon><User /></el-icon>
             </template>
@@ -58,7 +58,7 @@ function userLogin(){
           </el-col>
           <el-col :span="12" class="taRight">
             <div style="height: 40px;margin-bottom: 18px;display: flex;align-items: center;justify-content: right;">
-              <el-link type="primary">忘记密码?</el-link>
+              <el-link type="primary" @click="router.push('/reset')">忘记密码?</el-link>
             </div>
           </el-col>
         </el-row>

@@ -18,6 +18,11 @@ const router = createRouter({
           name: "unauthorized-registerPage",
           path: "/register",
           component: () => import("@/views/welcome/RegisterPage.vue")
+        },
+        {
+          name: "unauthorized-resetPage",
+          path: "/reset",
+          component: () => import("@/views/welcome/ResetPage.vue")
         }
       ]
     },
