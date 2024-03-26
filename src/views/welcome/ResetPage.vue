@@ -6,10 +6,6 @@ import {ElMessage} from "element-plus";
 import router from "@/router/index.js";
 
 const active = ref(0);
-const psID = ref(0);
-const fsID = ref(0);
-const process_status = ['wait', 'process', 'finish', 'error', 'success'];
-const finish_statue = ['wait', 'process', 'finish', 'error', 'success'];
 const formRef = ref();
 const validatePassword = (rule, value, callback) => {
   if (value === '') {
