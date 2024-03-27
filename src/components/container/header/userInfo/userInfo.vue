@@ -1,10 +1,17 @@
 <script setup>
 import Tukumij from "@/assets/image/Tukumij.png";
 import {useUserInfoStore} from "@/store/index.js";
+import {Back, Moon, Sunny, User} from "@element-plus/icons-vue";
+import { useDark, useToggle } from '@vueuse/core'
+import {logout} from "@/net/index.js";
+import router from "@/router/index.js";
 
 const store = useUserInfoStore();
-
-
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+function clickLogout() {
+  logout(()=>{router.push("/")})
+}
 </script>
 
 <template>
@@ -13,7 +20,28 @@ const store = useUserInfoStore();
       <div>{{store.user.username}}</div>
       <div>{{store.user.email}}</div>
     </div>
-    <el-avatar :src="Tukumij"></el-avatar>
+    <el-dropdown>
+      <el-avatar :src="Tukumij" class="headerAvatar"></el-avatar>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item>
+            <el-icon><User /></el-icon>
+            个人资料
+          </el-dropdown-item>
+          <el-dropdown-item>
+            <el-icon v-show="isDark"><Moon /></el-icon>
+            <el-icon v-show="!isDark"><Sunny /></el-icon>
+            <span @click.stop="toggleDark()">主题 &nbsp;</span>
+            <el-switch size="small" v-model="isDark"/>
+            <span></span>
+          </el-dropdown-item>
+          <el-dropdown-item @click="clickLogout" divided>
+            <el-icon><Back /></el-icon>
+            退出登录
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
   </div>
 </template>
 
@@ -23,6 +51,10 @@ const store = useUserInfoStore();
   display: flex;
   justify-content: flex-end;
   align-items: center;
+
+  .headerAvatar:hover{
+    cursor: pointer;
+  }
 
   .profile{
     text-align: right;

@@ -1,7 +1,7 @@
 <script setup>
 import {logout} from "@/net/index.js";
-import router from "@/router/index.js";
 import topHeader from "@/components/container/header/topHeader.vue"
+import menus from "@/components/container/aside/menus.vue"
 import {ref} from "vue";
 import {get} from "@/net/index.js";
 import {useUserInfoStore} from "@/store/index.js";
@@ -13,9 +13,6 @@ get("/api/user/info", (data) => {
   loading.value = false;
 })
 
-function clickLogout() {
-  logout(()=>{router.push("/")})
-}
 </script>
 
 <template>
@@ -25,10 +22,20 @@ function clickLogout() {
         <topHeader></topHeader>
       </el-header>
       <el-container>
-        <el-aside width="200px">Aside</el-aside>
+        <el-aside width="230px">
+          <el-scrollbar style="height: calc(100vh - 55px)">
+            <menus style="height: 100%"></menus>
+          </el-scrollbar>
+        </el-aside>
         <el-container>
-          <el-main>Main
-            <el-button @click="clickLogout">退出登录</el-button>
+          <el-main class="main-content-page">
+            <el-scrollbar style="height: calc(100vh - 55px)">
+              <router-view v-slot="{ Component }">
+                <transition name="el-fade-in-linear" mode="out-in">
+                  <component :is="Component" style="height: 100%"/>
+                </transition>
+              </router-view>
+            </el-scrollbar>
           </el-main>
         </el-container>
       </el-container>
@@ -47,5 +54,12 @@ function clickLogout() {
   display: flex;
   align-items: center;
   box-sizing: border-box;
+}
+.main-content-page{
+  padding: 0;
+  background-color: #f6f6f6;
+}
+.dark .main-content-page{
+  background-color: #212225;
 }
 </style>
