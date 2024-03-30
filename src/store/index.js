@@ -8,7 +8,8 @@ export const useUserInfoStore = defineStore('userInfo', {
                 email: '',
                 role: '',
                 registerTime: null
-            }
+            },
+            isCollapse: true
         }
     }
 })

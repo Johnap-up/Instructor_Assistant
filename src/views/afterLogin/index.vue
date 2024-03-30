@@ -1,10 +1,10 @@
 <script setup>
-import {logout} from "@/net/index.js";
 import topHeader from "@/components/container/header/topHeader.vue"
 import menus from "@/components/container/aside/menus.vue"
 import {ref} from "vue";
 import {get} from "@/net/index.js";
 import {useUserInfoStore} from "@/store/index.js";
+import {phone, isWeiXin} from "@/utils/mediaFunction.js";
 
 const store = useUserInfoStore();
 const loading = ref(true);
@@ -12,6 +12,7 @@ get("/api/user/info", (data) => {
   store.user = data;
   loading.value = false;
 })
+store.isCollapse = !!(phone() || isWeiXin());
 
 </script>
 
@@ -22,7 +23,7 @@ get("/api/user/info", (data) => {
         <topHeader></topHeader>
       </el-header>
       <el-container>
-        <el-aside width="230px">
+        <el-aside :width="store.isCollapse ? '63.2px' : '230px'">
           <el-scrollbar style="height: calc(100vh - 55px)">
             <menus style="height: 100%"></menus>
           </el-scrollbar>

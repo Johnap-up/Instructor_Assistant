@@ -1,0 +1,31 @@
+const validatePhone = (rule, value, callback) => {
+    if (value === ''){
+        callback(new Error('请输入手机号'))
+    } else {
+        const reg = /^1[3-9]\d{9}$/
+        if (reg.test(value)){
+            callback()
+        } else {
+            callback(new Error('请输入正确的手机号'))
+        }
+    }
+}
+const validateUsername = (rule, value, callback) => {
+    if (value === '') {
+        callback(new Error('请输入用户名'))
+    } else if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(value)) {
+        callback(new Error('用户名只能是字母、数字、汉字, 不能包含特殊字符'));
+    } else {
+        callback()
+    }
+}
+const validatePassword = (rule, value, callback) => {
+    if (value === '') {
+        callback(new Error('请输入密码'))
+    } else if (value !== form.password) {
+        callback(new Error('两次输入的密码不一致'));
+    } else {
+        callback()
+    }
+}
+export {validatePassword, validatePhone, validateUsername};

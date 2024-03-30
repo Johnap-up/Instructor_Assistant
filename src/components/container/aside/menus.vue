@@ -3,19 +3,24 @@ import {
   Menu as IconMenu,
   Setting, Bell, Avatar, List, Flag, MostlyCloudy, HomeFilled, Calendar,
 } from '@element-plus/icons-vue'
+import {useUserInfoStore} from "@/store/index.js";
 
-const handleOpen = (key, keyPath) => {
-  console.log(key, keyPath)
+const store = useUserInfoStore();
+const handleOpen = (key) => {
 }
 const handleClose = (key, keyPath) => {
-  console.log(key, keyPath)
 }
 </script>
 
 <template>
+
   <el-menu
-      style="min-height: calc(100vh - 55px)"  active-text-color="#ffd04b" class="el-menu-vertical-demo sideMenu" default-active="1"
+      style="min-height: calc(100vh - 55px)"   class="el-menu-vertical-demo sideMenu"
+      router
+      :default-active="$route.path"
+      active-text-color="#ffd04b"
       @open="handleOpen" @close="handleClose"
+      :collapse="store.isCollapse"
   >
     <el-menu-item index="1">
       <el-icon><HomeFilled /></el-icon>
@@ -56,12 +61,12 @@ const handleClose = (key, keyPath) => {
       <span>考勤管理</span>
     </el-menu-item>
     <el-menu-item index="6">
-      <el-icon><Calendar /></el-icon>
-      <el-badge :value="10" class="item">
-        <span>日程安排</span>
+      <el-badge :value="10"  class="item">
+        <el-icon ><Calendar /></el-icon>
       </el-badge>
+      <span>日程安排</span>
     </el-menu-item>
-    <el-menu-item index="7">
+    <el-menu-item index="/index/user-setting">
       <el-icon><setting /></el-icon>
       <span>设置</span>
     </el-menu-item>
@@ -74,6 +79,6 @@ const handleClose = (key, keyPath) => {
   color: var(--el-text-color);
 }
 .item {
-  line-height: calc(var(--el-menu-item-height) / 1.5);
+  line-height: calc(var(--el-menu-item-height) / 1.7);
 }
 </style>

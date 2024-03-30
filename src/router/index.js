@@ -29,7 +29,14 @@ const router = createRouter({
     {
       path: "/index",
       name: "authorized-index",
-      component: () => import("@/views/afterLogin/index/index.vue")
+      component: () => import("@/views/afterLogin/index.vue"),
+      children: [
+        {
+          path: "user-setting",
+          name: "authorized-user-setting",
+          component: () => import("@/views/afterLogin/main/settings/UserSettings.vue")
+        }
+      ]
     }
   ]
 })

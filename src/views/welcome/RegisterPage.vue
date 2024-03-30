@@ -4,6 +4,7 @@ import {Key, Lock, Message, User} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
 import {get, post} from "@/net/index.js";
 import {ElMessage} from "element-plus";
+import {validatePassword, validateUsername} from "@/utils/validateRules.js";
 
 
 const myTime = reactive({
@@ -26,24 +27,6 @@ const form = reactive({
   code: ""
 })
 const formRef = ref();
-const validateUsername = (rule, value, callback) => {
-  if (value === '') {
-    callback(new Error('请输入用户名'))
-  } else if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(value)) {
-    callback(new Error('用户名只能是字母、数字、汉字, 不能包含特殊字符'));
-  } else {
-    callback()
-  }
-}
-const validatePassword = (rule, value, callback) => {
-  if (value === '') {
-    callback(new Error('请输入密码'))
-  } else if (value !== form.password) {
-    callback(new Error('两次输入的密码不一致'));
-  } else {
-    callback()
-  }
-}
 const rule = {
   username: [
     {validator: validateUsername, trigger: ['blur', 'change']},

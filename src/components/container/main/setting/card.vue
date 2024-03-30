@@ -1,0 +1,50 @@
+<script setup>
+defineProps({
+  icon: Object,
+  title: String,
+  desc: String
+})
+</script>
+
+<template>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <el-icon style="margin-right: 3px;translate: 0 2px">
+          <component :is="icon"/>
+        </el-icon>
+        {{title}}
+      </div>
+      <div>{{}}</div>
+    </div>
+    <slot/>
+  </div>
+</template>
+
+<style lang="less" scoped>
+.card{
+  border-radius: 15px;
+  border: solid 1px var(--el-border-color);
+  background-color: var(--el-bg-color);
+  box-sizing: border-box;
+  min-height: 20px;
+  padding: 10px;
+  box-shadow: 0 0 10px 0 rgba(152, 108, 108, 0.2);
+  margin-bottom: 20px;
+}
+.card-header{
+  border-bottom: solid 1px var(--el-border-color);
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+
+  &>:first-child{
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  &>:last-child{
+    font-size: 13px;
+    color: grey;
+  }
+}
+</style>
