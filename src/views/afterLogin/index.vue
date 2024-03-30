@@ -13,7 +13,6 @@ get("/api/user/info", (data) => {
   loading.value = false;
 })
 store.isCollapse = !!(phone() || isWeiXin());
-
 </script>
 
 <template>

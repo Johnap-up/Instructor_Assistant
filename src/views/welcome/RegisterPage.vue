@@ -1,24 +1,13 @@
 <script setup>
-import {computed, reactive, ref} from "vue";
+import {computed, reactive, ref, onUnmounted} from "vue";
 import {Key, Lock, Message, User} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
 import {get, post} from "@/net/index.js";
 import {ElMessage} from "element-plus";
 import {validatePassword, validateUsername} from "@/utils/validateRules.js";
+import {timerFn} from "@/utils/methodUtil.js";
 
-
-const myTime = reactive({
-  time: 0,
-  consumeTime() {
-    if (this.time === 0) return;
-    console.time('time');
-    let that = this;
-    let timer = setTimeout(function fn() {
-      that.time--;
-      that.time === 0 ? clearTimeout(timer) : timer = setTimeout(fn, 1000);
-    }, 1000);
-  }
-});
+const myTime = timerFn();
 const form = reactive({
   username: "",
   password: "",
@@ -36,7 +25,7 @@ const rule = {
     {min: 6, max: 20, message: '密码长度在6-20个字符之间', trigger: ['blur', 'change']}
   ],
   password_repeat: [
-    {validator: validatePassword, trigger: ['blur', 'change']}
+    {validator: validatePassword(form, 'password'), trigger: ['blur', 'change']}
   ],
   email: [
     {required: true, message: '请输入邮件地址', trigger: 'blur'},
@@ -47,7 +36,7 @@ const rule = {
   ]
 }
 const isEmailValid = computed(() => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(form.email));
-
+// onUnmounted(() => {myTime.destroyTimer()})
 function askCode() {
   if (isEmailValid) {
     get(`/api/auth/ask-code?email=${form.email}&type=register`, () => {

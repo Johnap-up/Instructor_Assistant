@@ -4,9 +4,11 @@ import {Key, Lock, Message} from "@element-plus/icons-vue";
 import {get, post} from "@/net/index.js";
 import {ElMessage} from "element-plus";
 import router from "@/router/index.js";
+import {timerFn} from "@/utils/methodUtil.js";
 
 const active = ref(0);
 const formRef = ref();
+const myTime = timerFn();     //验证码计时用
 const validatePassword = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请输入密码'))
@@ -38,18 +40,6 @@ const rule = {
     { validator: validatePassword, trigger: ['blur', 'change'] },
   ],
 }
-const myTime = reactive({
-  time: 0,
-  consumeTime() {
-    if (this.time === 0) return;
-    console.time('time');
-    let that = this;
-    let timer = setTimeout(function fn() {
-      that.time--;
-      that.time === 0 ? clearTimeout(timer) : timer = setTimeout(fn, 1000);
-    }, 1000);
-  }
-});
 const isEmailValid = computed(() => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(form.email));
 function askCode() {
   if (isEmailValid) {
@@ -123,8 +113,6 @@ function resetPassword() {
                 </el-input>
               </el-col>
               <el-col :span="5">
-<!--                <el-button type="success">-->
-<!--                  获取验证码-->
                 <el-button type="success" plain @click="askCode" :disabled=" !isEmailValid || !!myTime.time">
                   {{ myTime.time > 0 ? `${myTime.time}s后重新发送` : '获取验证码' }}
                 </el-button>
@@ -134,7 +122,7 @@ function resetPassword() {
         </el-form>
       </div>
       <div style="margin-top: 80px">
-        <el-button type="warning" style="width: 270px" plain @click="emailConfirm">开始重置密码</el-button>
+        <el-button type="warning" style="width: 270px" plain @click="myTime.destroyTimer">开始重置密码</el-button>
       </div>
     </div>
     <div v-if="active === 1" style="margin: 0 20px">

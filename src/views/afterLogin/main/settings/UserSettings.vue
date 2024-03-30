@@ -1,18 +1,23 @@
 <script setup>
 import card from "@/components/container/main/setting/card.vue";
-import {User, Message, Refresh, Paperclip, Document} from '@element-plus/icons-vue'
+import {User, Message, Refresh, Paperclip, Document, EditPen, Lock, Key} from '@element-plus/icons-vue'
 import {ref, computed, reactive} from "vue";
 import YaZi from "@/assets/image/YaZi.png";
 import {useUserInfoStore} from "@/store/index.js";
 import {validatePhone} from "@/utils/validateRules.js";
 import {post, get} from "@/net/index.js";
 import {ELNOTIFICATION_OFFSET} from "@/utils/constUtil.js";
+import {timerFn} from "@/utils/methodUtil.js";
+import {ElMessage} from "element-plus";
+import {validatePassword} from "@/utils/validateRules.js";
 
+const myTime = timerFn();
 const store = useUserInfoStore();
 const registerTime = computed(() => new Date(store.user.registerTime).toLocaleString())
 const tagType = ["primary", "success", "info", "warning", "danger"];
 const changeableFormRef = ref();
 const emailFormRef = ref();
+const passwordFormRef = ref();
 const unchangeableDetails = reactive({
   username: "",
   gender: 1,
@@ -28,6 +33,11 @@ const emailForm = reactive({
   email: "",
   code: ""
 })
+const passwordForm = reactive({
+  password: "",
+  new_password: "",
+  new_password_repeat: ""
+})
 const rule = {
   email: [
     {required: true, message: '请输入邮件地址', trigger: 'blur'},
@@ -40,11 +50,31 @@ const rule = {
     {validator: validatePhone, trigger: ['blur', 'change']}
   ]
 }
+const rule_password = {
+  password: [
+    {required: true, message: '请输入原来的密码', trigger: 'blur'},
+  ],
+  new_password: [
+    {required: true, message: '请输入新密码', trigger: 'blur'},
+    {min: 6, max: 16, message: '长度在 6 到 16 个字符', trigger: 'blur'}
+  ],
+  new_password_repeat: [
+    {required: true, message: '请再次输入新密码', trigger: 'blur'},
+    {validator: validatePassword(passwordForm, "new_password"), trigger: ['blur', 'change']}
+  ]
+};
 const loading = reactive({
   changeable: false,
   email: false,
   allCards: true
 })
+const isEmailValid = ref(true);
+const isPasswordFormValid = ref(true);
+const onValidate = (prop, isValid) => {
+  if (prop === "email")
+    isEmailValid.value = isValid;
+}
+const onValidatePassword = (prop, isValid) => {isPasswordFormValid.value = isValid;}    //这里是对所有表单项进行校验
 function saveChangeableDetails(){
   changeableFormRef.value.validate(valid => {
     if (valid) {
@@ -72,6 +102,58 @@ function saveChangeableDetails(){
         message: "请检查您的输入是否正确",
         type: "warning",
         offset: ELNOTIFICATION_OFFSET
+      })
+    }
+  })
+}
+function sendEmailCode(){
+  emailFormRef.value.validate(isValid => {
+    get(`/api/auth/ask-code?email=${emailForm.email}&type=modify`, () => {
+      myTime.time = 60;
+      myTime.consumeTime();
+      ElMessage.success(`验证码已成功发送至邮箱${emailForm.email}，请注意查收`);
+    }, (message) => {
+      myTime.time = 0;
+      ElMessage.warning(message);
+    })
+  })
+}
+function modifyEmail(){
+  emailFormRef.value.validate(isValid => {
+    post("/api/user/modify-email", emailForm, () => {
+      store.user.email = emailForm.email;
+      emailForm.code = "";
+      ElNotification({
+        type: "success",
+        title: "Success!",
+        message: "您的电子邮件地址已成功修改！",
+        offset: ELNOTIFICATION_OFFSET
+      })}, (msg) => {
+      emailForm.code = "";
+      ElNotification({
+        type: "warning",
+        title: "Warning!",
+        message: `修改失败, ${msg}`,
+      })})
+  });
+}
+function resetPassword(){
+  passwordFormRef.value.validate(isValid => {
+    if (isValid){
+      post("/api/user/change-password", passwordForm, () => {
+        passwordFormRef.value.resetFields();
+        ElNotification({
+          type: "success",
+          title: "Success!",
+          message: "您的密码已成功修改！",
+          offset: ELNOTIFICATION_OFFSET
+        })}, (msg) => {
+        ElNotification({
+          type: "warning",
+          title: "Warning!",
+          message: `修改失败, ${msg}`,
+          offset: ELNOTIFICATION_OFFSET
+        })
       })
     }
   })
@@ -130,7 +212,7 @@ get("/api/user/details", (data) => {
     </div>
     <div class="settings-middle">
       <card class="middle-card" :icon="Message" title="电子邮件设置" desc="您可以在这里修改默认绑定的电子邮件地址">
-        <el-form ref="emailFormRef" :rules="rule" :model="emailForm" label-position="top" style="margin:0 10px 10px 10px">
+        <el-form @validate="onValidate" ref="emailFormRef" :rules="rule" :model="emailForm" label-position="top" style="margin:0 10px 10px 10px">
           <el-form-item label="电子邮件" prop="email">
             <el-input v-model="emailForm.email" placeholder="输入电子邮箱" maxlength="30"/>
           </el-form-item>
@@ -140,12 +222,30 @@ get("/api/user/details", (data) => {
                 <el-input v-model="emailForm.code" placeholder="验证码" maxlength="8"/>
               </el-col>
               <el-col :span="8">
-                <el-button  type="success" style="width: 100%" plain>获取验证码</el-button>
+                <el-button  type="success" @click="sendEmailCode" :disabled="!isEmailValid || !!myTime.time" style="width: 100%" plain>
+                  {{ myTime.time > 0 ? `${myTime.time}s后重新发送` : '获取验证码' }}
+                </el-button>
               </el-col>
             </el-row>
           </el-form-item>
           <div>
-            <el-button :icon="Refresh" type="success">更新电子邮件</el-button>
+            <el-button :icon="Refresh" @click="modifyEmail" type="success">更新电子邮件</el-button>
+          </div>
+        </el-form>
+      </card>
+      <card :icon="EditPen" title="修改密码" desc="您可以在这里修改密码">
+        <el-form :model="passwordForm" @validate="onValidatePassword" ref="passwordFormRef" :rules="rule_password" label-width="auto" label-position="left">
+          <el-form-item label="当前密码" prop="password">
+            <el-input type="password" v-model="passwordForm.password" :prefix-icon="Key" placeholder="当前密码" maxlength="16"/>
+          </el-form-item>
+          <el-form-item label="新密码" prop="new_password">
+            <el-input type="password" v-model="passwordForm.new_password" show-password :prefix-icon="Lock" placeholder="新密码" maxlength="16"/>
+          </el-form-item>
+          <el-form-item label="重复新密码" prop="new_password_repeat">
+            <el-input type="password" v-model="passwordForm.new_password_repeat" show-password :prefix-icon="Lock" placeholder="重复新密码" maxlength="16"/>
+          </el-form-item>
+          <div style="text-align: center">
+            <el-button @click="resetPassword" :icon="Refresh" type="success">立即重置密码</el-button>
           </div>
         </el-form>
       </card>
@@ -187,9 +287,6 @@ get("/api/user/details", (data) => {
   flex: 1;
   margin-top: 20px;
   max-width: 450px;
-}
-.settings-middle{
-
 }
 .tag-box{
   display: flex;

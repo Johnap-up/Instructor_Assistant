@@ -32,6 +32,9 @@ defineProps({
   box-shadow: 0 0 10px 0 rgba(152, 108, 108, 0.2);
   margin-bottom: 20px;
 }
+.card:hover{
+  box-shadow: 0 0 10px 0 rgba(152, 108, 108, 0.35);
+}
 .card-header{
   border-bottom: solid 1px var(--el-border-color);
   padding-bottom: 5px;

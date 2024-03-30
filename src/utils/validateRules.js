@@ -19,13 +19,15 @@ const validateUsername = (rule, value, callback) => {
         callback()
     }
 }
-const validatePassword = (rule, value, callback) => {
-    if (value === '') {
-        callback(new Error('请输入密码'))
-    } else if (value !== form.password) {
-        callback(new Error('两次输入的密码不一致'));
-    } else {
-        callback()
+const validatePassword = function (password, name){
+    return (rule, value, callback) => {
+        if (value === '') {
+            callback(new Error('请输入密码'))
+        } else if (value !== password[name]) {
+            callback(new Error('两次输入的密码不一致'));
+        } else {
+            callback()
+        }
     }
 }
 export {validatePassword, validatePhone, validateUsername};
