@@ -1,11 +1,11 @@
 <script setup>
-import Tukumij from "@/assets/image/Tukumij.png";
+import {useUserInfoStore} from "@/store/index.js";
 
+const store = useUserInfoStore();
 </script>
 
 <template>
-  <el-image class="logo" :src="Tukumij"></el-image>
-
+  <el-image class="logo" :src="store.avatarUrl"></el-image>
 </template>
 
 <style scoped>

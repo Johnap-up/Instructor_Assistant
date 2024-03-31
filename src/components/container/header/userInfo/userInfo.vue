@@ -1,5 +1,4 @@
 <script setup>
-import Tukumij from "@/assets/image/Tukumij.png";
 import {useUserInfoStore} from "@/store/index.js";
 import {Back, Moon, Sunny, User} from "@element-plus/icons-vue";
 import { useDark, useToggle } from '@vueuse/core'
@@ -21,7 +20,7 @@ function clickLogout() {
       <div>{{store.user.email}}</div>
     </div>
     <el-dropdown>
-      <el-avatar :src="Tukumij" class="headerAvatar"></el-avatar>
+      <el-avatar :src="store.avatarUrl" class="headerAvatar"></el-avatar>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item>
@@ -32,7 +31,13 @@ function clickLogout() {
             <el-icon v-show="isDark"><Moon /></el-icon>
             <el-icon v-show="!isDark"><Sunny /></el-icon>
             <span @click.stop="toggleDark()">主题 &nbsp;</span>
-            <el-switch size="small" v-model="isDark"/>
+            <el-switch
+                size="small"
+                inline-prompt
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                active-text="暗"
+                inactive-text="亮"
+                v-model="isDark"/>
             <span></span>
           </el-dropdown-item>
           <el-dropdown-item @click="clickLogout" divided>

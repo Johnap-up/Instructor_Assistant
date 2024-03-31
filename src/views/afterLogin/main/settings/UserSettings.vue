@@ -2,14 +2,14 @@
 import card from "@/components/container/main/setting/card.vue";
 import {User, Message, Refresh, Paperclip, Document, EditPen, Lock, Key} from '@element-plus/icons-vue'
 import {ref, computed, reactive} from "vue";
-import YaZi from "@/assets/image/YaZi.png";
 import {useUserInfoStore} from "@/store/index.js";
 import {validatePhone} from "@/utils/validateRules.js";
-import {post, get} from "@/net/index.js";
+import {post, get, accessHeader} from "@/net/index.js";
 import {ELNOTIFICATION_OFFSET} from "@/utils/constUtil.js";
 import {timerFn} from "@/utils/methodUtil.js";
 import {ElMessage} from "element-plus";
 import {validatePassword} from "@/utils/validateRules.js";
+import axios from "axios";
 
 const myTime = timerFn();
 const store = useUserInfoStore();
@@ -158,8 +158,23 @@ function resetPassword(){
     }
   })
 }
+function beforeAvatarUpload(rawFile){
+  if (rawFile.type !== 'image/jpeg' && rawFile.type !== 'image/png'){
+    ElMessage.error("头像只能是JPG/PNG格式的");
+    return false;
+  }else if(rawFile.size / 1024 > 2*1024){
+    ElMessage.error("头像不能大于 2MB")
+    return false;
+  }
+  store.isLoading.avatarUpload = true;
+  return true;
+}
+function uploadSuccess(response){
+  ElMessage.success("头像上传成功");
+  store.user.avatar = response.data;
+  store.isLoading.avatarUpload = false;
+}
 get("/api/user/details", (data) => {
-  console.log(data)
   unchangeableDetails.username = store.user.username;
   emailForm.email = store.user.email;
   unchangeableDetails.gender = data.gender;
@@ -255,7 +270,18 @@ get("/api/user/details", (data) => {
         <card :icon="Paperclip" title="账号墙">
           <div style="text-align: center;padding: 5px 15px 0 15px">
             <div>
-              <el-avatar :size="70" :src="YaZi"></el-avatar>
+              <el-avatar class="avatar" :size="70" :src="store.avatarUrl" v-loading="store.isLoading.avatarUpload"/>
+              <div style="margin: 5px 0">
+                <el-upload
+                    :action="axios.defaults.baseURL + '/api/image/avatar'"
+                    :show-file-list="false"
+                    :before-upload="beforeAvatarUpload"
+                    :on-success="uploadSuccess"
+                    :headers="accessHeader()"
+                >
+                  <el-button size="small" round type="danger" plain>修改头像</el-button>
+                </el-upload>
+              </div>
               <div style="font-weight: bold">你好, {{store.user.username}}</div>
             </div>
           </div>
@@ -301,6 +327,11 @@ get("/api/user/details", (data) => {
   padding: 10px;
   white-space: pre-line;
   line-height: 18px;
+}
+.avatar:hover{
+  animation: rotateIn;
+  animation-duration: 1s;
+  cursor: pointer;
 }
 
 </style>

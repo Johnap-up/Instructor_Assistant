@@ -107,4 +107,4 @@ function unauthorized(){
     return !takeAccessToken();
 }
 
-export {login, logout, post, get, unauthorized};
+export {login, logout, post, get, unauthorized, accessHeader};
