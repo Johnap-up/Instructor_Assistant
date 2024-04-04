@@ -25,6 +25,7 @@ const unchangeableDetails = reactive({
   grade: "",
   annex_class: ["21班","22班","23班"],
   experience: "ciallo",
+  tid: ""
 })
 const changeableDetails = reactive({
   phone: "13576072541"
@@ -182,6 +183,7 @@ get("/api/user/details", (data) => {
   unchangeableDetails.grade = data.grade;
   unchangeableDetails.annex_class = data.annex_class?.split(",");
   unchangeableDetails.experience = data.experience;
+  unchangeableDetails.tid = data.tid;
   changeableDetails.phone = data.phone;
   loading.allCards = false;
 })
@@ -204,9 +206,18 @@ get("/api/user/details", (data) => {
           <el-form-item label="所属学院">
             <el-input disabled :placeholder="unchangeableDetails.institute"/>
           </el-form-item>
-          <el-form-item label="年级">
-            <el-input disabled :placeholder="unchangeableDetails.grade"/>
-          </el-form-item>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="年级">
+                <el-input disabled :placeholder="unchangeableDetails.grade"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="教学号">
+                <el-input disabled :placeholder="unchangeableDetails.tid"/>
+              </el-form-item>
+            </el-col>
+          </el-row>
           <el-form-item label="管理班级">
             <div class="tag-box">
               <el-check-tag checked  v-for="(item, index) in unchangeableDetails.annex_class" :type="tagType[index%5]"  effect="plain">{{item + "班"}}</el-check-tag>

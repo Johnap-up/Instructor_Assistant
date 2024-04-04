@@ -10,6 +10,30 @@ const validatePhone = (rule, value, callback) => {
         }
     }
 }
+const validateQQ = (rule, value, callback) => {
+    if (value === ''){
+        callback(new Error('请输入QQ号'))
+    } else {
+        const reg = /^[1-9][0-9]{4,9}$/
+        if (reg.test(value)){
+            callback()
+        } else {
+            callback(new Error('请输入正确的QQ号'))
+        }
+    }
+}
+const validateSid = (rule, value, callback) => {
+    if (value === ''){
+        callback(new Error('请输入学号'))
+    } else {
+        const reg = /^\d{8}$/
+        if (reg.test(value)){
+            callback()
+        } else {
+            callback(new Error('请输入正确的学号'))
+        }
+    }
+}
 const validateUsername = (rule, value, callback) => {
     if (value === '') {
         callback(new Error('请输入用户名'))
@@ -30,4 +54,4 @@ const validatePassword = function (password, name){
         }
     }
 }
-export {validatePassword, validatePhone, validateUsername};
+export {validatePassword, validatePhone, validateUsername, validateQQ, validateSid};

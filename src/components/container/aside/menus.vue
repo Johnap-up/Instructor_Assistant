@@ -22,7 +22,7 @@ const handleClose = (key, keyPath) => {
       @open="handleOpen" @close="handleClose"
       :collapse="store.isCollapse"
   >
-    <el-menu-item index="1">
+    <el-menu-item index="/index">
       <el-icon><HomeFilled /></el-icon>
       <span>首页</span>
     </el-menu-item>
@@ -56,7 +56,7 @@ const handleClose = (key, keyPath) => {
       <el-icon><Bell /></el-icon>
       <span>事务招领</span>
     </el-menu-item>
-    <el-menu-item index="5">
+    <el-menu-item index="/index/crud-page">
       <el-icon><Avatar /></el-icon>
       <span>考勤管理</span>
     </el-menu-item>

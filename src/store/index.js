@@ -16,6 +16,12 @@ export const useUserInfoStore = defineStore('userInfo', {
             isCollapse: true,
             isLoading:{
                 avatarUpload: false
+            },
+            student:{
+                studentList: [],
+                learningDoneRate: [],
+                dormitoryDoneRate: [],
+                dormitoryEnum: {"n1":"北一","s1":"南一"}
             }
         }
     },getters: {

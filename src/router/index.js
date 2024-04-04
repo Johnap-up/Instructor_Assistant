@@ -4,7 +4,7 @@ import {unauthorized} from "@/net/index.js";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
+    {       //这是登录前的路由
       path: "/",
       name: "unauthorized-login",
       component: () => import("@/views/WelcomeView.vue"),
@@ -32,9 +32,19 @@ const router = createRouter({
       component: () => import("@/views/afterLogin/index.vue"),
       children: [
         {
+          path: "",
+          name: "authorized-homePage",
+          component: () => import("@/views/afterLogin/main/homePage/homePage.vue")
+        },
+        {
           path: "user-setting",
           name: "authorized-user-setting",
           component: () => import("@/views/afterLogin/main/settings/UserSettings.vue")
+        },
+        {
+          path: "crud-page",
+          name: "authorized-crud-page",
+          component: () => import("@/views/afterLogin/main/studentManage/crudPage.vue")
         }
       ]
     }
