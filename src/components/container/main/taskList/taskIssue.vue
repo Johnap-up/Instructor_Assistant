@@ -65,6 +65,7 @@ function deltaToText(delta){        //统计字数用
 }
 const contentLength = computed(() => deltaToText(editor.text).length)
 function submitTask(){
+  console.log(editor.type)
   if (timePicker.value.length !== 2) {
     ElMessage.warning("请选择日期！")
     return;
@@ -83,7 +84,7 @@ function submitTask(){
     return;
   }
   post("/api/task/create-task", {
-    type: editor.type,
+    type: editor.type.id,
     title: editor.title,
     content: editor.text,
     issueTime: timePicker.value[0],
@@ -165,8 +166,16 @@ get('/api/task/types', data => editor.types = data);
       </template>
       <div style="display: flex;gap: 10px; margin-bottom: 10px">
         <div style="width: 150px">
-          <el-select placeholder="请选择任务类型" v-model="editor.type">
-            <el-option v-for="item in editor.types" :key="item.id" :value="item.id" :label="item.name"/>
+          <el-select clearable placeholder="请选择任务类型" v-model="editor.type" value-key="id">
+            <el-option v-for="item in editor.types" :key="item.id" :value="item" :label="item.name">
+              <div style="display: flex;align-items: center">
+                <el-tag :color="item.color" style="margin-right: 8px" size="small"/>
+                <span :style="{color : item.color}">{{item.name}}</span>
+              </div>
+            </el-option>
+            <template #prefix>
+              <el-tag :color="!!editor.type ? editor.type.color : null"/>
+            </template>
           </el-select>
         </div>
         <div style="flex: 1">
@@ -227,6 +236,10 @@ get('/api/task/types', data => editor.types = data);
 :deep(.ql-editor.ql-blank::before){
   color: var(--el-text-color-placeholder);
   font-style: normal;
+}
+.el-tag {
+  border: none;
+  aspect-ratio: 1;
 }
 </style>
 
