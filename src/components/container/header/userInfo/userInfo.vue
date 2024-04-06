@@ -20,10 +20,10 @@ function clickLogout() {
       <div>{{store.user.email}}</div>
     </div>
     <el-dropdown>
-      <el-avatar :src="store.avatarUrl" class="headerAvatar"></el-avatar>
+      <el-avatar :src="store.avatarUrl" class="headerAvatar" @click="router.push('/index/user-setting')"></el-avatar>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item>
+          <el-dropdown-item @click="router.push('/index/user-setting')">
             <el-icon><User /></el-icon>
             个人资料
           </el-dropdown-item>

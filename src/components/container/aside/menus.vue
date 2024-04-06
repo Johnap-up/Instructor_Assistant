@@ -1,7 +1,7 @@
 <script setup>
 import {
   Menu as IconMenu,
-  Setting, Bell, Avatar, List, Flag, MostlyCloudy, HomeFilled, Calendar,
+  Setting, Bell, Avatar, List, Flag, MostlyCloudy, HomeFilled, Calendar, PieChart, Edit, Upload, SetUp
 } from '@element-plus/icons-vue'
 import {useUserInfoStore} from "@/store/index.js";
 
@@ -21,6 +21,7 @@ const handleClose = (key, keyPath) => {
       active-text-color="#ffd04b"
       @open="handleOpen" @close="handleClose"
       :collapse="store.isCollapse"
+      :default-openeds="['2','2-1','2-2']"
   >
     <el-menu-item index="/index">
       <el-icon><HomeFilled /></el-icon>
@@ -33,19 +34,31 @@ const handleClose = (key, keyPath) => {
       </template>
       <el-sub-menu index="2-1">
         <template #title>
-          <el-icon><Flag /></el-icon>
-          青年大学习
+          <el-icon><SetUp /></el-icon>
+          任务配置
         </template>
-        <el-menu-item index="2-1-1">任务发布</el-menu-item>
-        <el-menu-item index="2-1-2">提交记录</el-menu-item>
+        <el-menu-item index="/index/big-learning">
+          <el-icon><Upload /></el-icon>
+          任务发布
+        </el-menu-item>
+        <el-menu-item index="2-1-2">
+          <el-icon><Edit /></el-icon>
+          自定义模板
+        </el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="2-2">
         <template #title>
+          <el-icon><PieChart /></el-icon>
+          数据图表
+        </template>
+        <el-menu-item index="2-2-1">
+          <el-icon><Flag /></el-icon>
+          青年大学习
+        </el-menu-item>
+        <el-menu-item index="2-2-2">
           <el-icon><MostlyCloudy /></el-icon>
           线上查寝
-        </template>
-        <el-menu-item index="2-2-1">任务发布</el-menu-item>
-        <el-menu-item index="2-2-2">提交记录</el-menu-item>
+        </el-menu-item>
       </el-sub-menu>
     </el-sub-menu>
     <el-menu-item index="3">

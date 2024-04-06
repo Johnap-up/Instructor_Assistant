@@ -136,7 +136,7 @@ const delSelected = () => {               //删除选中
 const rowKey = (row) => {           //用于生成Key
   return row.sid;
 }
-get(`/student/all-info?year=2021`, (data) => {     //后端通过id来辨识是哪个账户发送的
+get(`/student/all-info?year=2021&semester=1`, (data) => {     //后端通过id来辨识是哪个账户发送的
   store.student.studentList = data.studentList;
   store.student.learningDoneRate = data.map["1"];
   store.student.dormitoryDoneRate = data.map["2"];

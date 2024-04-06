@@ -45,6 +45,11 @@ const router = createRouter({
           path: "crud-page",
           name: "authorized-crud-page",
           component: () => import("@/views/afterLogin/main/studentManage/crudPage.vue")
+        },
+        {
+          path: "big-learning",
+          name: "authorized-big-learning",
+          component: () => import("@/views/afterLogin/main/taskList/learning/learningPage.vue")
         }
       ]
     }
