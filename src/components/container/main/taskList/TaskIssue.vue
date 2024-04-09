@@ -6,53 +6,78 @@ import "@vueup/vue-quill/dist/vue-quill.snow.css"
 import ImageResize from "quill-image-resize-vue";
 import {ImageExtend, QuillWatch} from "quill-image-super-solution-module";
 import axios from "axios";
-import {accessHeader, get, post} from "@/net/index.js";
+import {accessHeader, post} from "@/net/index.js";
+import {useUserInfoStore} from "@/store/index.js";
 
+const store = useUserInfoStore();
 const props = defineProps({
   show:Boolean,
-  showModify: Function
 });
+const emits = defineEmits(['close', 'success']);
 const refEditor = ref();
-const timePicker = ref('');
+const defaultTime2= [
+    new Date(),
+    new Date()
+] // '12:00:00', '08:00:00'
+const timePicker = ref()
 const shortcuts = [
   {
-    text: 'Last week',
+    text: '1 minute',
     value: () => {
       const end = new Date()
       const start = new Date()
-      start.setDate(start.getDate() - 7)
+      end.setMinutes(start.getMinutes() + 1)
       return [start, end]
     },
   },
   {
-    text: 'Last month',
+    text: '10 minutes',
     value: () => {
       const end = new Date()
       const start = new Date()
-      start.setMonth(start.getMonth() - 1)
+      end.setMinutes(start.getMinutes() + 10)
       return [start, end]
     },
   },
   {
-    text: 'Last 3 months',
+    text: '1 hour',
     value: () => {
       const end = new Date()
       const start = new Date()
-      start.setMonth(start.getMonth() - 3)
+      end.setHours(start.getHours() + 1)
+      return [start, end]
+    },
+  },
+  {
+    text: 'tomorrow',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      end.setDate(start.getDay() + 1)
+      return [start, end]
+    },
+  },
+  {
+    text: 'next week',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      end.setDate(start.getDate() + 7)
       return [start, end]
     },
   },
 ]
 const editor = reactive({
   type: null,
-  types:null,
   title: '',
   text: '',
   uploading: false
 })
 function initEditor(){
   refEditor.value.setContents('', 'user');
-  timePicker.value = null;
+  timePicker.value = [];
+  // timePicker.value = new Date();
+  // timePicker.value = [ new Date(),new Date()];
   editor.title = '';
   editor.type = null;
 }
@@ -65,12 +90,14 @@ function deltaToText(delta){        //统计字数用
 }
 const contentLength = computed(() => deltaToText(editor.text).length)
 function submitTask(){
-  console.log(editor.type)
   if (timePicker.value.length !== 2) {
     ElMessage.warning("请选择日期！")
     return;
+  }else if (timePicker.value[1].getTime() < new Date().getTime()){
+    ElMessage.warning("截止时间不能晚于当前时间！")
+    return;
   }
-  const text = deltaToText(editor.text);
+  const text = deltaToText(editor.text);//=== "" ? "无~" : editor.text
   if (text.length > 20000){
     ElMessage.warning("字数超出限制，无法发布主题");
     return;
@@ -83,18 +110,18 @@ function submitTask(){
     ElMessage.warning("请选择主题类型！")
     return;
   }
+  console.log(editor.text)
   post("/api/task/create-task", {
     type: editor.type.id,
     title: editor.title,
-    content: editor.text,
+    content: editor.text || {ops:[{insert:"无\n"}]},
     issueTime: timePicker.value[0],
     endTime: timePicker.value[1]
   }, () => {
     ElMessage.success("任务发布成功")
-    props.showModify();
+    emits('success');
   })
 }
-const handleBeforeClose = () => {props.showModify()}
 Quill.register("modules/imageResize", ImageResize)
 Quill.register("modules/ImageExtend", ImageExtend)
 const editorOption = {          //quill配置
@@ -147,7 +174,6 @@ const editorOption = {          //quill配置
     }
   }
 }
-get('/api/task/types', data => editor.types = data);
 </script>
 
 <template>
@@ -156,7 +182,7 @@ get('/api/task/types', data => editor.types = data);
                direction="btt"
                @open="initEditor"
                :close-on-click-modal="false"
-               :before-close="handleBeforeClose"
+               @close="emits('close')"
                :size="650">
       <template #header>
         <div>
@@ -167,7 +193,7 @@ get('/api/task/types', data => editor.types = data);
       <div style="display: flex;gap: 10px; margin-bottom: 10px">
         <div style="width: 150px">
           <el-select clearable placeholder="请选择任务类型" v-model="editor.type" value-key="id">
-            <el-option v-for="item in editor.types" :key="item.id" :value="item" :label="item.name">
+            <el-option v-for="item in store.task.types" :key="item.id" :value="item" :label="item.name">
               <div style="display: flex;align-items: center">
                 <el-tag :color="item.color" style="margin-right: 8px" size="small"/>
                 <span :style="{color : item.color}">{{item.name}}</span>
@@ -187,6 +213,7 @@ get('/api/task/types', data => editor.types = data);
             v-model="timePicker"
             type="datetimerange"
             :shortcuts="shortcuts"
+            :default-time="defaultTime2"
             range-separator="To"
             start-placeholder="Start date"
             end-placeholder="End date"

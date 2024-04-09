@@ -1,6 +1,6 @@
 <script setup>
-import topHeader from "@/components/container/header/topHeader.vue"
-import menus from "@/components/container/aside/menus.vue"
+import topHeader from "@/components/container/header/TopHeader.vue"
+import menus from "@/components/container/aside/Menus.vue"
 import {ref} from "vue";
 import {get} from "@/net/index.js";
 import {useUserInfoStore} from "@/store/index.js";

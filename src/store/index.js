@@ -8,6 +8,7 @@ export const useUserInfoStore = defineStore('userInfo', {
         return{
             user:{
                 username: '',
+                name: '',
                 email: '',
                 role: '',
                 avatar: null,
@@ -22,6 +23,11 @@ export const useUserInfoStore = defineStore('userInfo', {
                 learningDoneRate: [],
                 dormitoryDoneRate: [],
                 dormitoryEnum: {"n1":"北一","s1":"南一"}
+            },
+            task:{
+                types:[],
+                selectedType: [],
+                taskList: []
             }
         }
     },getters: {
@@ -30,6 +36,13 @@ export const useUserInfoStore = defineStore('userInfo', {
                 return `${axios.defaults.baseURL}/image${this.user.avatar}`
             } else{
                 return defaultAvatar;
+            }
+        },
+    }, actions: {
+        findTypeById(id){
+            for (let type of this.task.types){
+                if (type.id === id)
+                    return type;
             }
         }
     }

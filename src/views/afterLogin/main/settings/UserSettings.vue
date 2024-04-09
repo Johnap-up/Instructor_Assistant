@@ -176,7 +176,7 @@ function uploadSuccess(response){
   store.isLoading.avatarUpload = false;
 }
 get("/api/user/details", (data) => {
-  unchangeableDetails.username = store.user.username;
+  unchangeableDetails.username = store.user.name;
   emailForm.email = store.user.email;
   unchangeableDetails.gender = data.gender;
   unchangeableDetails.institute = data.institute;
@@ -192,7 +192,7 @@ get("/api/user/details", (data) => {
 <template>
   <div class="settings-box" v-loading="loading.allCards">
     <div class="settings-left">
-      <card :icon="User" title="个人信息" desc="您可以在这里修改默认绑定的电子邮件地址">
+      <card class="card-public" :icon="User" title="个人信息" desc="您可以在这里修改默认绑定的电子邮件地址">
         <el-form :model="unchangeableDetails" label-position="top" style="margin: 0 10px 10px 10px">
           <el-form-item label="姓名">
             <el-input disabled :placeholder="unchangeableDetails.username"/>
@@ -225,7 +225,7 @@ get("/api/user/details", (data) => {
           </el-form-item>
         </el-form>
       </card>
-      <card class="middle-card" :icon="Document" title="信息设置" desc="您可以在这里修改一些信息">
+      <card class="middle-card card-public" :icon="Document" title="信息设置" desc="您可以在这里修改一些信息">
         <el-form ref="changeableFormRef" :rules="rule" :model="changeableDetails" label-position="top" style="margin:0 10px 10px 10px">
           <el-form-item label="手机号" prop="phone">
             <el-input v-model="changeableDetails.phone" maxlength="11"/>
@@ -237,7 +237,7 @@ get("/api/user/details", (data) => {
       </card>
     </div>
     <div class="settings-middle">
-      <card class="middle-card" :icon="Message" title="电子邮件设置" desc="您可以在这里修改默认绑定的电子邮件地址">
+      <card class="middle-card card-public" :icon="Message" title="电子邮件设置" desc="您可以在这里修改默认绑定的电子邮件地址">
         <el-form @validate="onValidate" ref="emailFormRef" :rules="rule" :model="emailForm" label-position="top" style="margin:0 10px 10px 10px">
           <el-form-item label="电子邮件" prop="email">
             <el-input v-model="emailForm.email" placeholder="输入电子邮箱" maxlength="30"/>
@@ -259,7 +259,7 @@ get("/api/user/details", (data) => {
           </div>
         </el-form>
       </card>
-      <card :icon="EditPen" title="修改密码" desc="您可以在这里修改密码">
+      <card class="card-public" :icon="EditPen" title="修改密码" desc="您可以在这里修改密码">
         <el-form :model="passwordForm" @validate="onValidatePassword" ref="passwordFormRef" :rules="rule_password" label-width="auto" label-position="left">
           <el-form-item label="当前密码" prop="password">
             <el-input type="password" v-model="passwordForm.password" :prefix-icon="Key" placeholder="当前密码" maxlength="16"/>
@@ -278,7 +278,7 @@ get("/api/user/details", (data) => {
     </div>
     <div class="settings-right">
       <div style="position: sticky;top: 20px;">
-        <card :icon="Paperclip" title="账号墙">
+        <card :icon="Paperclip" title="账号墙" class="card-public">
           <div style="text-align: center;padding: 5px 15px 0 15px">
             <div>
               <el-avatar class="avatar" :size="70" :src="store.avatarUrl" v-loading="store.isLoading.avatarUpload"/>
@@ -293,7 +293,7 @@ get("/api/user/details", (data) => {
                   <el-button size="small" round type="danger" plain>修改头像</el-button>
                 </el-upload>
               </div>
-              <div style="font-weight: bold">你好, {{store.user.username}}</div>
+              <div style="font-weight: bold">你好, {{store.user.name}}</div>
             </div>
           </div>
           <el-divider style="margin: 10px 0"/>
@@ -301,7 +301,7 @@ get("/api/user/details", (data) => {
             {{unchangeableDetails.experience || "暂无个人简介~"}}
           </div>
         </card>
-        <card style="margin-top: 10px;font-size: 14px">
+        <card style="font-size: 14px" class="card-public">
           <div style="margin-bottom: 10px">任期时间: {{registerTime}}</div>
           <div style="color: grey">欢迎适应导员助手平台</div>
         </card>
@@ -344,5 +344,11 @@ get("/api/user/details", (data) => {
   animation-duration: 1s;
   cursor: pointer;
 }
-
+.card-public{
+  margin-bottom: 20px;
+  border-radius: 15px;
+  &:hover{
+    box-shadow: 0 0 10px 0 rgba(152, 108, 108, 0.35);
+  }
+}
 </style>

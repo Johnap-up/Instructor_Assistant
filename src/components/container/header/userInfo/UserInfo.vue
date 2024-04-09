@@ -16,11 +16,11 @@ function clickLogout() {
 <template>
   <div class="user-info">
     <div class="profile">
-      <div>{{store.user.username}}</div>
+      <div>{{store.user.name}}</div>
       <div>{{store.user.email}}</div>
     </div>
     <el-dropdown>
-      <el-avatar :src="store.avatarUrl" class="headerAvatar" @click="router.push('/index/user-setting')"></el-avatar>
+      <el-avatar :src="store.avatarUrl" class="headerAvatar"></el-avatar>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item @click="router.push('/index/user-setting')">

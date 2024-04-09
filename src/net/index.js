@@ -81,12 +81,12 @@ function internalGet(url, header, success, failure, error = defaultError) {
         error(err);
     })
 }
-
 function login(username, password, remember, success, failure = defaultFailure){
     internalPost("/api/auth/login",{
         username: username,
         password: password,
-        remember: remember
+        remember: remember,
+        hello:"ciallo"
     },{
         'Content-Type': 'application/x-www-form-urlencoded'
     }, (data) => {

@@ -37,7 +37,7 @@ const handleClose = (key, keyPath) => {
           <el-icon><SetUp /></el-icon>
           任务配置
         </template>
-        <el-menu-item index="/index/big-learning">
+        <el-menu-item index="/index/task/list">
           <el-icon><Upload /></el-icon>
           任务发布
         </el-menu-item>

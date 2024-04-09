@@ -34,7 +34,7 @@ const router = createRouter({
         {
           path: "",
           name: "authorized-homePage",
-          component: () => import("@/views/afterLogin/main/homePage/homePage.vue")
+          component: () => import("@/views/afterLogin/main/homePage/HomePage.vue")
         },
         {
           path: "user-setting",
@@ -44,13 +44,25 @@ const router = createRouter({
         {
           path: "crud-page",
           name: "authorized-crud-page",
-          component: () => import("@/views/afterLogin/main/studentManage/crudPage.vue")
+          component: () => import("@/views/afterLogin/main/studentManage/CrudPage.vue")
         },
         {
-          path: "big-learning",
-          name: "authorized-big-learning",
-          component: () => import("@/views/afterLogin/main/taskList/learning/learningPage.vue")
-        }
+          path: "task",
+          name: "authorized-task",
+          component:() => import("@/views/afterLogin/main/taskList/Task.vue"),
+          children: [
+            {
+              path: "list",
+              name: "authorized-list",
+              component: () => import("@/views/afterLogin/main/taskList/TaskList.vue")
+            },
+            {
+              path: "task-detail/:taskId",
+              name: "authorized-task-detail",
+              component: () => import("@/views/afterLogin/main/taskList/TaskDetail.vue")
+            }
+          ]
+        },
       ]
     }
   ]
