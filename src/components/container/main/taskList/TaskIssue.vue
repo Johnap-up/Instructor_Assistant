@@ -1,7 +1,7 @@
 <script setup>
 import {Document, Promotion} from "@element-plus/icons-vue";
 import {reactive, computed, ref} from "vue";
-import {Quill, QuillEditor} from "@vueup/vue-quill";
+import {Delta, Quill, QuillEditor} from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css"
 import ImageResize from "quill-image-resize-vue";
 import {ImageExtend, QuillWatch} from "quill-image-super-solution-module";
@@ -12,6 +12,41 @@ import {useUserInfoStore} from "@/store/index.js";
 const store = useUserInfoStore();
 const props = defineProps({
   show:Boolean,
+  defaultTitle:{
+    default: '',
+    type: String
+  },
+  defaultText:{
+    default: '',
+    type: String
+  },
+  defaultType:{
+    default: null,
+    type: Object
+  },
+  defaultTimePicker:{
+    default:[],
+    type: Object
+  },
+  submitButton:{
+    default: '立即发布',
+    type: String
+  },
+  submit:{
+    default: (editor, success) => {
+      post("/api/task/create-task", {
+        type: editor.type.id,
+        title: editor.title,
+        content: editor.text || {ops:[{insert:"无\n"}]},
+        issueTime: editor.timePicker[0],
+        endTime: editor.timePicker[1]
+      }, () => {
+        ElMessage.success("任务发布成功")
+        success()
+      })
+    },
+    type: Function
+  }
 });
 const emits = defineEmits(['close', 'success']);
 const refEditor = ref();
@@ -19,7 +54,6 @@ const defaultTime2= [
     new Date(),
     new Date()
 ] // '12:00:00', '08:00:00'
-const timePicker = ref()
 const shortcuts = [
   {
     text: '1 minute',
@@ -71,15 +105,17 @@ const editor = reactive({
   type: null,
   title: '',
   text: '',
-  uploading: false
+  uploading: false,
+  timePicker: []
 })
 function initEditor(){
-  refEditor.value.setContents('', 'user');
-  timePicker.value = [];
-  // timePicker.value = new Date();
-  // timePicker.value = [ new Date(),new Date()];
-  editor.title = '';
-  editor.type = null;
+  if (props.defaultText)
+    editor.text = new Delta(JSON.parse(props.defaultText));
+  else
+    refEditor.value.setContents('', 'user');
+  editor.timePicker = props.defaultTimePicker;
+  editor.title = props.defaultTitle;
+  editor.type = props.defaultType;
 }
 function deltaToText(delta){        //统计字数用
   if(!delta.ops) return "";
@@ -90,10 +126,10 @@ function deltaToText(delta){        //统计字数用
 }
 const contentLength = computed(() => deltaToText(editor.text).length)
 function submitTask(){
-  if (timePicker.value.length !== 2) {
+  if (editor.timePicker.length !== 2) {
     ElMessage.warning("请选择日期！")
     return;
-  }else if (timePicker.value[1].getTime() < new Date().getTime()){
+  }else if (editor.timePicker[1].getTime() < new Date().getTime()){
     ElMessage.warning("截止时间不能晚于当前时间！")
     return;
   }
@@ -110,17 +146,7 @@ function submitTask(){
     ElMessage.warning("请选择主题类型！")
     return;
   }
-  console.log(editor.text)
-  post("/api/task/create-task", {
-    type: editor.type.id,
-    title: editor.title,
-    content: editor.text || {ops:[{insert:"无\n"}]},
-    issueTime: timePicker.value[0],
-    endTime: timePicker.value[1]
-  }, () => {
-    ElMessage.success("任务发布成功")
-    emits('success');
-  })
+  props.submit(editor, () => emits('success'))
 }
 Quill.register("modules/imageResize", ImageResize)
 Quill.register("modules/ImageExtend", ImageExtend)
@@ -210,7 +236,7 @@ const editorOption = {          //quill配置
       </div>
       <div class="block">
         <el-date-picker
-            v-model="timePicker"
+            v-model="editor.timePicker"
             type="datetimerange"
             :shortcuts="shortcuts"
             :default-time="defaultTime2"
@@ -233,7 +259,7 @@ const editorOption = {          //quill配置
           当前字数{{contentLength}}（最大支持2000字）
         </div>
         <div>
-          <el-button @click="submitTask" type="success" plain :icon="Promotion">立即发布任务</el-button>
+          <el-button @click="submitTask" type="success" plain :icon="Promotion">{{submitButton}}</el-button>
         </div>
       </div>
     </el-drawer>

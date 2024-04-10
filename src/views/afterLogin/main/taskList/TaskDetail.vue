@@ -1,16 +1,21 @@
 <script setup>
 import {useUserInfoStore} from "@/store/index.js";
-import {get} from "@/net/index.js";
+import {get, post} from "@/net/index.js";
 import {useRoute} from "vue-router";
-import {reactive, computed} from "vue";
+import {reactive, computed, ref} from "vue";
 import axios from "axios";
-import {ArrowLeft, Female, Male} from "@element-plus/icons-vue";
+import {ArrowLeft, Female, Male, EditPen} from "@element-plus/icons-vue";
 import {QuillDeltaToHtmlConverter} from "quill-delta-to-html";
 import card from "@/components/container/main/setting/card.vue"
 import taskTag from "@/components/container/main/taskList/TaskTag.vue"
 import router from "@/router/index.js";
+import interactButton from "@/components/container/main/taskList/InteractButton.vue"
+import taskIssue from "@/components/container/main/taskList/TaskIssue.vue"
+import {ElMessage} from "element-plus";
 
 
+const store = useUserInfoStore();
+const edit = ref(false);
 const route = useRoute();
 const taskId = route.params.taskId;
 const task = reactive({
@@ -22,7 +27,22 @@ const content = computed(() => {
   const converter = new QuillDeltaToHtmlConverter(ops, {inlineStyles: true});
   return converter.convert();
 })
-get(`api/task/task?taskId=${taskId}`, data => {task.data = data})
+function updateTask(editor){
+  post("/api/task/update-task", {
+    taskId: taskId,
+    type: editor.type.id,
+    title: editor.title,
+    content: editor.text || {ops:[{insert:"无\n"}]},
+    issueTime: editor.timePicker[0],
+    endTime: editor.timePicker[1]
+  }, () => {
+    ElMessage.success("任务更新成功")
+    edit.value = false;
+    init();
+  })
+}
+const init = () => get(`api/task/task-detail?taskId=${taskId}`, data => {task.data = data})
+init();
 </script>
 
 <template>
@@ -57,13 +77,23 @@ get(`api/task/task?taskId=${taskId}`, data => {task.data = data})
               <div class="desc">手机号：{{task.data.user.phone}}</div>
             </div>
           </div>
+          <interactButton style="margin-top: 10px" name="编辑帖子" color="dodgerblue"
+                          v-if="store.user.role.includes(task.data.user.role) && store.user.id === task.data.user.id"
+                          :check="false" @check="edit = true;">
+            <el-icon><EditPen/></el-icon>
+          </interactButton>
         </div>
         <div class="task-main-right">
           <div class="task-content" v-html="content"></div>
         </div>
       </div>
-      <div></div>
+      <card class="border-radius-7"></card>
     </div>
+<!--    下面的task.data是必须的，否则会出现数据未来得及同步的问题-->
+    <taskIssue :show="edit" @close="edit = false" v-if="task.data"
+               submit-button="更新任务内容" :default-type="store.findTypeById(task.data.type)"
+               :default-time-picker="[new Date(task.data.issueTime), new Date(task.data.endTime)]"
+               :default-text="task.data.content" :default-title="task.data.title" :submit="updateTask"></taskIssue>
     <div class="right-card border-radius-7">
       <card class="border-radius-7 card-entity">
         <div>ciallo</div>
@@ -103,6 +133,8 @@ get(`api/task/task?taskId=${taskId}`, data => {task.data = data})
   margin: 0 auto;
   background-color: var(--el-bg-color);
   width: 800px;
+  box-shadow: 0 0 10px 0 rgba(152, 108, 108, 0.2);
+
 
   .task-main-left{
     width: 200px;
@@ -118,11 +150,15 @@ get(`api/task/task?taskId=${taskId}`, data => {task.data = data})
   .task-main-right{
     width: 600px;
     padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
 
     .task-content{
       font-size: 14px;
       line-height: 22px;
       opacity: 0.8;
+      flex: 1;
     }
   }
 }
