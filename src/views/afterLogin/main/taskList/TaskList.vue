@@ -175,8 +175,6 @@ sendGet();
     font-size: 14px;
     color: grey;
     margin: 5px 0;
-    //display: -webkit-box;
-    //-webkit-line-clamp: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

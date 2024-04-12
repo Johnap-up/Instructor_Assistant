@@ -6,6 +6,7 @@ import axios from "axios";
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import {createPinia} from "pinia";
 import 'animate.css'
+import '@/assets/css/quill.css'
 
 
 axios.defaults.baseURL = "http://localhost:9856";

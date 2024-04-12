@@ -11,6 +11,8 @@ import taskTag from "@/components/container/main/taskList/TaskTag.vue"
 import router from "@/router/index.js";
 import interactButton from "@/components/container/main/taskList/InteractButton.vue"
 import taskIssue from "@/components/container/main/taskList/TaskIssue.vue"
+import RecordSubmit from "@/components/container/main/taskList/RecordSubmit.vue";
+import Record from "@/components/container/main/taskList/Record.vue";
 import {ElMessage} from "element-plus";
 
 
@@ -20,13 +22,15 @@ const route = useRoute();
 const taskId = route.params.taskId;
 const task = reactive({
   data:null,
-  comments:[]
+  submitRecords:[],
+  page: 1
 })
-const content = computed(() => {
-  const ops = JSON.parse(task.data.content).ops;
+const cardHeaderStyle = {};
+function convertToHtml(content){
+  const ops = JSON.parse(content).ops;
   const converter = new QuillDeltaToHtmlConverter(ops, {inlineStyles: true});
   return converter.convert();
-})
+}
 function updateTask(editor){
   post("/api/task/update-task", {
     taskId: taskId,
@@ -41,15 +45,26 @@ function updateTask(editor){
     init();
   })
 }
-const init = () => get(`api/task/task-detail?taskId=${taskId}`, data => {task.data = data})
+const init = () => get(`api/task/task-detail?taskId=${taskId}`, data => {
+  task.data = data;
+  loadSubmitRecords(1);
+})
 init();
+
+function loadSubmitRecords(page){
+  task.submitRecords = null;
+  task.page = page;
+  get(`/api/task/records?taskId=${taskId}&page=${page - 1}`, data => {
+    task.submitRecords = data;
+  })
+}
 </script>
 
 <template>
   <div class="outer-box">
     <div class="task-page" v-if="task.data">
       <div class="task-main border-radius-7" style="position: sticky;top: 0;z-index: 10">
-        <card style="display: flex;width: 100%" class="border-radius-7">
+        <card style="display: flex;width: 100%" class="border-radius-7" :card-header-style="cardHeaderStyle" >
           <el-button :icon="ArrowLeft" type="info" size="small" plain round @click="router.push('/index/task/list')">返回列表</el-button>
           <div style="text-align: center;flex: 1">
             <taskTag :type="task.data.type"/>
@@ -84,10 +99,23 @@ init();
           </interactButton>
         </div>
         <div class="task-main-right">
-          <div class="task-content" v-html="content"></div>
+          <div class="task-content" v-html="convertToHtml(task.data.content)"></div>
         </div>
       </div>
-      <card class="border-radius-7"></card>
+      <card class="border-radius-7" :card-header-style="cardHeaderStyle">
+        <RecordSubmit :task-id="taskId"/>
+      </card>
+      <card class="border-radius-7" :card-header-style="cardHeaderStyle">
+        <div class="record-wrapper" v-for="item in task.submitRecords" :key="item.id">
+          <Record :info="item"/>
+        </div>
+      </card>
+      <div style="width: fit-content;margin: 20px auto">
+        <el-pagination background layout="prev, pager, next"
+                       v-model:current-page="task.page" @current-change="loadSubmitRecords"
+                       :total="task.data.recordAmount" :page-size="10" hide-on-single-page/>
+      </div>
+
     </div>
 <!--    下面的task.data是必须的，否则会出现数据未来得及同步的问题-->
     <taskIssue :show="edit" @close="edit = false" v-if="task.data"
@@ -126,6 +154,7 @@ init();
   flex-direction: column;
   gap: 10px;
   padding: 10px 0;
+  margin-bottom: 300px;
 }
 .task-main{
   display: flex;
@@ -162,7 +191,14 @@ init();
     }
   }
 }
+.record-wrapper{
+  border-bottom: 1px solid grey;
+  box-sizing:border-box;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--el-border-color);
+}
 .border-radius-7{
   border-radius: 7px;
 }
+
 </style>

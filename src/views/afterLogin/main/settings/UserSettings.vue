@@ -237,7 +237,7 @@ get("/api/user/details", (data) => {
       </card>
     </div>
     <div class="settings-middle">
-      <card class="middle-card card-public" :icon="Message" title="电子邮件设置" desc="您可以在这里修改默认绑定的电子邮件地址">
+      <card class="middle-card card-public"  :icon="Message" title="电子邮件设置" desc="您可以在这里修改默认绑定的电子邮件地址">
         <el-form @validate="onValidate" ref="emailFormRef" :rules="rule" :model="emailForm" label-position="top" style="margin:0 10px 10px 10px">
           <el-form-item label="电子邮件" prop="email">
             <el-input v-model="emailForm.email" placeholder="输入电子邮箱" maxlength="30"/>
@@ -301,7 +301,7 @@ get("/api/user/details", (data) => {
             {{unchangeableDetails.experience || "暂无个人简介~"}}
           </div>
         </card>
-        <card style="font-size: 14px" class="card-public">
+        <card style="font-size: 14px" class="card-public" >
           <div style="margin-bottom: 10px">任期时间: {{registerTime}}</div>
           <div style="color: grey">欢迎适应导员助手平台</div>
         </card>

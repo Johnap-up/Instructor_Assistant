@@ -196,6 +196,7 @@ get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id�
         </el-table-column>
       </el-table>
     </div>
+    <el-backtop target=".main-content-page .el-scrollbar__wrap" :right="20" :bottom="70"/>
     <el-dialog :width="'50%'" v-model="dialogTableVisible" :title="'编辑 ' + dialogForm[0].name + ' 的信息'" width="800">
       <el-form :model="dialogForm[0]" :rules="rule" ref="DialogFormRef" class="dialog-form" style="width: 100%" >
         <el-row class="dialog-row" :gutter="8" justify="space-between">

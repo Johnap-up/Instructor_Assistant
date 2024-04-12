@@ -2,20 +2,27 @@
 defineProps({
   icon: Object,
   title: String,
-  desc: String
+  desc: String,
+  cardHeaderStyle:{
+    default:{
+      paddingBottom: '5px',
+      marginBottom: '10px',
+    },
+    type: Object
+  }
 })
 </script>
 
 <template>
   <div class="card">
-    <div class="card-header">
+    <div class="card-header" :style="cardHeaderStyle">
       <div>
         <el-icon v-if="!!icon" style="margin-right: 3px;translate: 0 2px">
           <component :is="icon"/>
         </el-icon>
         {{title}}
       </div>
-      <div>{{}}</div>
+      <div></div>
     </div>
     <slot/>
   </div>
@@ -32,9 +39,9 @@ defineProps({
 }
 
 .card-header{
-  border-bottom: solid 1px var(--el-border-color);
-  padding-bottom: 5px;
-  margin-bottom: 10px;
+  //border-bottom: solid 1px var(--el-border-color);
+  //padding-bottom: 5px;
+  //margin-bottom: 10px;
 
   &>:first-child{
     font-size: 18px;
