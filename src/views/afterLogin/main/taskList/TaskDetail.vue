@@ -2,8 +2,7 @@
 import {useUserInfoStore} from "@/store/index.js";
 import {get, post} from "@/net/index.js";
 import {useRoute} from "vue-router";
-import {reactive, computed, ref} from "vue";
-import axios from "axios";
+import {reactive, ref} from "vue";
 import {ArrowLeft, Female, Male, EditPen} from "@element-plus/icons-vue";
 import {QuillDeltaToHtmlConverter} from "quill-delta-to-html";
 import card from "@/components/container/main/setting/card.vue"
@@ -74,7 +73,7 @@ function loadSubmitRecords(page){
       </div>
       <div class="task-main">
         <div class="task-main-left">
-          <el-avatar :src="axios.defaults.baseURL + '/image' + task.data.user.avatar"
+          <el-avatar :src="store.avatarUserUrl(task.data.user.avatar)"
                      :size="60"/>
           <div>
             <div style="font-size: 18px;font-weight: bold">

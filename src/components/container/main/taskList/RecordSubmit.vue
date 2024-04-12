@@ -2,7 +2,7 @@
 import LightCard from "@/components/container/main/taskList/LightCard.vue";
 import {Compass, Document, Edit, EditPen, Microphone, Picture} from "@element-plus/icons-vue";
 import {ref, reactive, computed, defineProps} from "vue";
-import {Delta, Quill, QuillEditor} from "@vueup/vue-quill";
+import {Quill, QuillEditor} from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css"
 import {accessHeader, post} from "@/net/index.js";
 import ImageResize from "quill-image-resize-vue";
@@ -80,6 +80,15 @@ const editorOption = {          //quill配置
   }
 }
 function submitRecord(){
+  const text = deltaToText(editor.text);
+  if (text.length > 200){
+    ElMessage.warning("字数超出限制！")
+    return;
+  }
+  if (!editor.title){
+    ElMessage.warning("请填写标题！");
+    return;
+  }
   post('/api/task/submit-record', {
     taskId: props.taskId,
     content: JSON.stringify(editor.text || {ops:[{insert:"无\n"}]}),

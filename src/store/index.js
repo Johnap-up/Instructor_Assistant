@@ -45,6 +45,13 @@ export const useUserInfoStore = defineStore('userInfo', {
                 if (type.id === id)
                     return type;
             }
+        },
+        avatarUserUrl(avatar){
+            if (avatar){  
+                return `${axios.defaults.baseURL}/image${avatar}`
+            } else{
+                return defaultAvatar;
+            }
         }
     }
 })

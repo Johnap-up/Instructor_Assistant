@@ -1,10 +1,11 @@
 <script setup>
 import {defineProps} from "vue";
-import axios from "axios";
-import {EditPen, Female, Male} from "@element-plus/icons-vue";
+import {Female, Male} from "@element-plus/icons-vue";
 import {dateFormat} from "@/utils/methodUtil.js";
 import NoImage from "@/assets/image/NoImage.png"
+import {useUserInfoStore} from "@/store/index.js";
 
+const store = useUserInfoStore();
 const props = defineProps({
   info: Object,
 });
@@ -13,7 +14,7 @@ const props = defineProps({
 <template>
   <div class="record-main">
     <div class="record-main-left">
-        <el-avatar :src="axios.defaults.baseURL + '/image' + info.user.avatar"
+        <el-avatar :src="store.avatarUserUrl(info.user.avatar)"
                    :size="60"/>
         <div class="desc" style="font-size: 14px; padding-left: 15px">
           <span style="color: #5d5a5a;font-weight: bold">{{info.user.name}}</span>
