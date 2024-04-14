@@ -4,6 +4,8 @@ import {Female, Male} from "@element-plus/icons-vue";
 import {dateFormat} from "@/utils/methodUtil.js";
 import NoImage from "@/assets/image/NoImage.png"
 import {useUserInfoStore} from "@/store/index.js";
+import defaultAvatar from "@/assets/image/defaultAvatar.png"
+
 
 const store = useUserInfoStore();
 const props = defineProps({
@@ -14,25 +16,26 @@ const props = defineProps({
 <template>
   <div class="record-main">
     <div class="record-main-left">
-        <el-avatar :src="store.avatarUserUrl(info.user.avatar)"
+        <el-avatar :src="store.avatarUserUrl(info.user.avatar) || defaultAvatar"
                    :size="60"/>
         <div class="desc" style="font-size: 14px; padding-left: 15px">
           <span style="color: #5d5a5a;font-weight: bold">{{info.user.name}}</span>
-          <span style="font-size: 12px">{{' 25210818'}}</span>
+          <span style="font-size: 12px">{{info.user.sid}}</span>
           <span style="color: hotpink" v-if="info.user.gender === 1">
                 <el-icon><Female/></el-icon>
               </span>
           <span style="color: dodgerblue" v-if="info.user.gender === 0">
                 <el-icon><Male/></el-icon>
           </span>
-          <div class="desc" style="padding-top: 5px">{{dateFormat("YYYY-mm-dd MM:SS",new Date(info.submitTime))}}</div>
-          <div class="desc" style="padding-top: 10px">{{info.user.phone}}</div>
+          <div class="desc" style="padding-top: 5px">{{dateFormat("YYYY-mm-dd HH:MM",new Date(info.submitTime))}}</div>
+          <div class="desc" style="padding-top: 10px">{{'Tel：' + info.user.phone}}</div>
+          <div class="desc" >{{'QQ：' + info.user.qq}}</div>
         </div>
     </div>
     <div class="record-main-right">
       <div class="title-text">
         <div>{{info.title}}</div>
-        <div class="text-content">{{info.text}}aaaa, aaaaaaaaaaaaaaaa,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</div>
+        <div class="text-content">{{info.text}}</div>
       </div>
       <el-image
           style="width: 80px; height: 80px"
@@ -40,7 +43,7 @@ const props = defineProps({
           :zoom-rate="1.2"
           :max-scale="7"
           :min-scale="0.2"
-          :preview-src-list="!!info.images ? [NoImage] : info.images"
+          :preview-src-list="!!info.images ? info.images : [NoImage]"
           :initial-index="4"
           fit="cover"
       />

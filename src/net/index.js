@@ -2,6 +2,7 @@ import axios from "axios";
 // import {ElMessage} from "element-plus";
 
 const authItemName = "access_token";
+const roleItemName = "access_role";             //暂时直接存储，之后要加密
 const defaultFailure = (message, code, url) => {
     console.warn(`请求地址:${url}, 状态码:${code}, 错误信息:${message}`);
     ElMessage.warning(message);
@@ -28,24 +29,47 @@ function accessHeader(){
     let str = takeAccessToken();
     return str ? {'Authorization': `Bearer ${str}`} : {};
 }
+function takeAccessRole(){
+    const str = localStorage.getItem(roleItemName)||sessionStorage.getItem(roleItemName);
+    if (str === null)
+        return null;
+    const roleObj = JSON.parse(str);
+    if (roleObj.expire <= new Date()){
+        deleteAccessRole();
+        return null;
+    }
+    return roleObj.role;
+}
+function accessRole(){
+    return takeAccessRole();
+}
 function get(url, success, failure=defaultFailure){
     internalGet(url, accessHeader(), success, failure);
 }
 function post(url, data, success, failure=defaultFailure){
     internalPost(url, data, accessHeader(), success, failure);
 }
-function storeAccessToken(token, remember, expire){
+function storeAccessToken(token, remember, expire, role){
     const authObj = {token: token, expire: expire}
+    const roleObj = {role: role};
     const str = JSON.stringify(authObj);
-    if (remember)
+    const roleStr = JSON.stringify(roleObj);
+    if (remember){
         localStorage.setItem(authItemName, str);
-    else
+        localStorage.setItem(roleItemName, roleStr);
+    } else{
         sessionStorage.setItem(authItemName, str);
+        sessionStorage.setItem(roleItemName, roleStr);
+    }
 }
 
 function deleteAccessToken(){
     localStorage.removeItem(authItemName);
     sessionStorage.removeItem(authItemName);
+}
+function deleteAccessRole(){
+    localStorage.removeItem(roleItemName);
+    sessionStorage.removeItem(roleItemName);
 }
 function internalPost(url, data, header, success, failure, error = defaultError) {
     axios.post(url, data, {
@@ -81,16 +105,16 @@ function internalGet(url, header, success, failure, error = defaultError) {
         error(err);
     })
 }
-function login(username, password, remember, success, failure = defaultFailure){
+function login(username, password, remember, role, success, failure = defaultFailure){      //这里的role被弃置了，暂时没改过来
     internalPost("/api/auth/login",{
         username: username,
         password: password,
         remember: remember,
-        hello:"ciallo"
+        role: role,
     },{
         'Content-Type': 'application/x-www-form-urlencoded'
     }, (data) => {
-        storeAccessToken(data.token, remember, data.expire);
+        storeAccessToken(data.token, remember, data.expire, data.role);                           //暂时不加密
         ElMessage.success(`登录成功, 欢迎${data.username}`)
         success(data);
     },failure)
@@ -98,6 +122,7 @@ function login(username, password, remember, success, failure = defaultFailure){
 function logout(success, failure = defaultFailure){
     get("/api/auth/logout",()=>{
         deleteAccessToken();
+        deleteAccessRole();
         ElMessage.success("退出登录成功，欢迎您在再次使用");
         success();
     },failure)
@@ -107,4 +132,4 @@ function unauthorized(){
     return !takeAccessToken();
 }
 
-export {login, logout, post, get, unauthorized, accessHeader};
+export {login, logout, post, get, unauthorized, accessHeader, accessRole, deleteAccessToken, deleteAccessRole};

@@ -6,10 +6,6 @@ import {
 import {useUserInfoStore} from "@/store/index.js";
 
 const store = useUserInfoStore();
-const handleOpen = (key) => {
-}
-const handleClose = (key, keyPath) => {
-}
 </script>
 
 <template>
@@ -19,11 +15,10 @@ const handleClose = (key, keyPath) => {
       router
       :default-active="$route.path"
       active-text-color="#ffd04b"
-      @open="handleOpen" @close="handleClose"
       :collapse="store.isCollapse"
       :default-openeds="['2','2-1','2-2']"
   >
-    <el-menu-item index="/index">
+    <el-menu-item index="/instructor">
       <el-icon><HomeFilled /></el-icon>
       <span>首页</span>
     </el-menu-item>
@@ -37,7 +32,7 @@ const handleClose = (key, keyPath) => {
           <el-icon><SetUp /></el-icon>
           任务配置
         </template>
-        <el-menu-item index="/index/task/list">
+        <el-menu-item index="/instructor/task/list">
           <el-icon><Upload /></el-icon>
           任务发布
         </el-menu-item>
@@ -65,11 +60,11 @@ const handleClose = (key, keyPath) => {
       <el-icon><icon-menu /></el-icon>
       <span>日志记录</span>
     </el-menu-item>
-    <el-menu-item index="4">
+    <el-menu-item index="/instructor/student-setting">
       <el-icon><Bell /></el-icon>
-      <span>事务招领</span>
+      <span>失物招领</span>
     </el-menu-item>
-    <el-menu-item index="/index/crud-page">
+    <el-menu-item index="/instructor/crud-page">
       <el-icon><Avatar /></el-icon>
       <span>考勤管理</span>
     </el-menu-item>
@@ -79,7 +74,7 @@ const handleClose = (key, keyPath) => {
       </el-badge>
       <span>日程安排</span>
     </el-menu-item>
-    <el-menu-item index="/index/user-setting">
+    <el-menu-item index="/instructor/user-setting">
       <el-icon><setting /></el-icon>
       <span>设置</span>
     </el-menu-item>

@@ -36,4 +36,22 @@ function dateFormat(fmt, date) {
     }
     return fmt;
 }
-export {timerFn, dateFormat}
+function getCurrentSemester() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1; // 月份从 0 开始计数，所以要加 1
+
+    let semester;
+    if (currentMonth >= 9 && currentMonth <= 12) {
+        semester = `${currentYear}-${currentYear + 1} 学年第一学期`;
+    } else if (currentMonth >= 1 && currentMonth <= 2) {
+        semester = `${currentYear - 1}-${currentYear} 学年第一学期`;
+    } else if (currentMonth >= 3 && currentMonth <= 8) {
+        semester = `${currentYear - 1}-${currentYear} 学年第二学期`;
+    } else {
+        semester = "当前时间不在学年学期范围内";
+    }
+
+    return semester;
+}
+export {timerFn, dateFormat, getCurrentSemester}

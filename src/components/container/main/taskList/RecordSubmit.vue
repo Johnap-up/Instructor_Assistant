@@ -2,21 +2,48 @@
 import LightCard from "@/components/container/main/taskList/LightCard.vue";
 import {Compass, Document, Edit, EditPen, Microphone, Picture} from "@element-plus/icons-vue";
 import {ref, reactive, computed, defineProps} from "vue";
-import {Quill, QuillEditor} from "@vueup/vue-quill";
+import {Quill, QuillEditor, Delta} from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css"
 import {accessHeader, post} from "@/net/index.js";
 import ImageResize from "quill-image-resize-vue";
 import {ImageExtend, QuillWatch} from "quill-image-super-solution-module";
 import axios from "axios";
 
+const emits = defineEmits(['success']);
 const props = defineProps({
-  taskId: String
+  taskId: String,
+  defaultTitle: {
+    default: '',
+    type: String
+  },
+  defaultText: {
+    default: '',
+    type:String,
+  },
+  defaultShowText:{
+    default: '点击提交...',
+    type: String
+  },
+  handler:{
+    default: (editor, taskId, success) => {
+      post('/api/task/submit-record', {
+        taskId: taskId,
+        content: JSON.stringify(editor.text || {ops:[{insert:"无\n"}]}),
+        title: editor.title
+      },()=>{
+        ElMessage.success('提交成功!');
+        success();
+        editor.show = false;
+      })
+    },
+    type: Function
+  }
 })
 const refEditor = ref();
 const editor = reactive({
   show: false,
-  text: '',
-  title: '',
+  text: !!props.defaultText ? new Delta(JSON.parse(props.defaultText)) : props.defaultText,
+  title: props.defaultTitle,
   uploading: false,
 });
 function deltaToText(delta){        //统计字数用
@@ -89,21 +116,16 @@ function submitRecord(){
     ElMessage.warning("请填写标题！");
     return;
   }
-  post('/api/task/submit-record', {
-    taskId: props.taskId,
-    content: JSON.stringify(editor.text || {ops:[{insert:"无\n"}]}),
-    title: editor.title
-  },()=>{
-    ElMessage.success('提交成功!');
-    editor.show = false;
-  })
+  props.handler(editor, props.taskId, () => {
+    emits('success');
+  });
 }
 </script>
 
 <template>
   <light-card>
-    <div class="create-topic" @click="editor.show = true">
-      <el-icon><EditPen/></el-icon> 点击提交...
+    <div class="create-topic" @click="editor.show = true;">
+      <el-icon><EditPen/></el-icon> {{props.defaultShowText}}
     </div>
     <div style="margin-top: 10px;display: flex;gap: 13px;font-size: 18px;color: grey">
       <el-icon><Edit /></el-icon>

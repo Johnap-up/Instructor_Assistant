@@ -53,10 +53,6 @@ const rule = {
   room: [{required: true, message: '请输入房间号', trigger: ['blur', 'change']}],
   phone: [{validator: validatePhone, trigger: ['blur', 'change']}],
   qq: [{validator: validateQQ, message: '请输入QQ号', trigger: ['blur', 'change']}],
-  email: [
-    {required: true, message: '请输入邮件地址', trigger: 'blur'},
-    {type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change']}
-  ],
   dormitory: [{required: true, message: '请输入宿舍', trigger: ['blur', 'change']}],
   classroom: [{required: true, message: '请输入班级', trigger: ['blur', 'change']}],
   gender: [{required: true, message: '请选择性别', trigger: ['blur', 'change']}]
@@ -197,7 +193,7 @@ get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id�
       </el-table>
     </div>
     <el-backtop target=".main-content-page .el-scrollbar__wrap" :right="20" :bottom="70"/>
-    <el-dialog :width="'50%'" v-model="dialogTableVisible" :title="'编辑 ' + dialogForm[0].name + ' 的信息'" width="800">
+    <el-dialog :width="'50%'" v-model="dialogTableVisible" :title="'编辑 ' + dialogForm[0].name + ' 的信息'" width="800" draggable>
       <el-form :model="dialogForm[0]" :rules="rule" ref="DialogFormRef" class="dialog-form" style="width: 100%" >
         <el-row class="dialog-row" :gutter="8" justify="space-between">
           <el-col :span="8">
@@ -259,11 +255,12 @@ get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id�
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item prop="email">
+            <el-form-item>
               <el-input
                   v-model="dialogForm[0].email"
                   style="max-width: 600px"
                   placeholder="Please input"
+                  disabled
               >
                 <template #prepend>邮箱</template>
               </el-input>
@@ -337,10 +334,6 @@ get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id�
   margin-bottom: 5px;
 }
 .dialog-form{
-  //& .el-form-item{
-  //  margin: 0 10px 18px 0;
-  //  //max-width: 33%
-  //}
 }
 
 </style>

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import {unauthorized} from "@/net/index.js";
+import {unauthorized, accessRole, deleteAccessRole, deleteAccessToken} from "@/net/index.js";
+import {ElMessage} from "element-plus";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,8 +28,8 @@ const router = createRouter({
       ]
     },
     {
-      path: "/index",
-      name: "authorized-index",
+      path: "/instructor",
+      name: "authorized-instructor",
       component: () => import("@/views/afterLogin/index.vue"),
       children: [
         {
@@ -64,18 +65,85 @@ const router = createRouter({
           ]
         },
       ]
-    }
+    },
+    {
+      path: "/index",
+      name: "/authorized-index",
+      component: () => import("@/views/afterLogin/index.vue"),
+      children: [
+        {
+          path: "",
+          name: "authorized-student-homePage",
+          component: () => import("@/views/afterLogin/main/homePage/HomePage.vue")
+        },
+        {
+          path: "student-setting",
+          name: "authorized-student-setting",
+          component: () => import("@/views/afterLogin/studentRole/settings/StudentSettings.vue")
+        },
+        {
+          path: "task",
+          name: "authorized-student-task",
+          component:() => import("@/views/afterLogin/studentRole/taskList/StudentTask.vue"),
+          children: [
+            {
+              path: "list",
+              name: "authorized-student-list",
+              component: () => import("@/views/afterLogin/studentRole/taskList/TaskList.vue")
+            },
+            {
+              path: "task-detail/:taskId",
+              name: "authorized-student-task-detail",
+              component: () => import("@/views/afterLogin/studentRole/taskList/TaskDetail.vue")
+            }
+          ]
+        },
+      ],
+    },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import("@/components/container/exception/NotFound.vue") }
   ]
 })
 router.beforeEach((to, from, next)=>{
+  // next();
   const isUnauthorized = unauthorized();
+  const role = accessRole();
+  console.log(to.path)
+  if (!role){
+    console.log("role is null")
+    deleteAccessRole();
+    deleteAccessToken();
+    if (to.path !== "/"){
+      next("/");
+      ElMessage("请重新登录");
+    } else{
+      next();
+    }
+  }else {
+    if (role.includes("instructor")){
+      console.log("1")
+      routeHandler(to, next, isUnauthorized, "/instructor")
+    }else if (role.includes("student")){
+      console.log("2")
+      routeHandler(to, next, isUnauthorized, "/index")
+    }else {
+      deleteAccessRole();
+      deleteAccessToken();
+      ElMessage("身份不存在，请重新登录");
+      console.log("3")
+      next("/");
+    }
+  }
+})
+function routeHandler(to, next, isUnauthorized, originPath){
   if(to.name.startsWith("unauthorized-") && !isUnauthorized){   //用户已经登录并想访问登录页面，拒绝
-    next("/index");
+    next(originPath);
   }else if(to.name.startsWith("authorized-") && isUnauthorized){
     next("/");
+  }else if(!to.path.startsWith(originPath)){
+    next(originPath);
   }else {
     next();
   }
-})
+}
 
 export default router

@@ -1,3 +1,5 @@
+import {ElMessage} from "element-plus";
+
 const validatePhone = (rule, value, callback) => {
     if (value === ''){
         callback(new Error('请输入手机号'))
@@ -19,6 +21,20 @@ const validateQQ = (rule, value, callback) => {
             callback()
         } else {
             callback(new Error('请输入正确的QQ号'))
+        }
+    }
+}
+const validateRole = (rule, value, callback) => {
+    if (value === ''){
+        ElMessage.warning('请输入角色')
+        // callback()
+    } else {
+        const reg = /^(student|instructor)$/
+        if (reg.test(value)){
+            callback()
+        } else {
+            ElMessage.warning('请输入正确的角色')
+            // callback()
         }
     }
 }
@@ -54,4 +70,4 @@ const validatePassword = function (password, name){
         }
     }
 }
-export {validatePassword, validatePhone, validateUsername, validateQQ, validateSid};
+export {validatePassword, validatePhone, validateUsername, validateQQ, validateSid, validateRole};

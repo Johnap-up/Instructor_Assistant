@@ -12,6 +12,10 @@ import {useUserInfoStore} from "@/store/index.js";
 const store = useUserInfoStore();
 const props = defineProps({
   show:Boolean,
+  isUpdate:{
+    default: false,
+    type: Boolean
+  },
   defaultTitle:{
     default: '',
     type: String
@@ -129,7 +133,7 @@ function submitTask(){
   if (editor.timePicker.length !== 2) {
     ElMessage.warning("请选择日期！")
     return;
-  }else if (editor.timePicker[1].getTime() < new Date().getTime()){
+  }else if (!props.isUpdate && editor.timePicker[1].getTime() < new Date().getTime()){
     ElMessage.warning("截止时间不能晚于当前时间！")
     return;
   }

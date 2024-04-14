@@ -8,6 +8,10 @@ import router from "@/router/index.js";
 const store = useUserInfoStore();
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
+const settingUrl = {
+  "instructor": "/instructor/user-setting",
+  "student": "/index/student-setting"
+}
 function clickLogout() {
   logout(()=>{router.push("/")})
 }
@@ -17,13 +21,13 @@ function clickLogout() {
   <div class="user-info">
     <div class="profile">
       <div>{{store.user.name}}</div>
-      <div>{{store.user.email}}</div>
+      <div>{{store.user.email || '邮箱未设置~'}}</div>
     </div>
     <el-dropdown>
       <el-avatar :src="store.avatarUrl" class="headerAvatar"></el-avatar>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item @click="router.push('/index/user-setting')">
+          <el-dropdown-item @click="router.push(settingUrl[store.user.role])">
             <el-icon><User /></el-icon>
             个人资料
           </el-dropdown-item>

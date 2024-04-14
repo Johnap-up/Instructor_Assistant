@@ -1,6 +1,7 @@
 <script setup>
 import topHeader from "@/components/container/header/TopHeader.vue"
-import menus from "@/components/container/aside/Menus.vue"
+import studentMenus from "@/components/student/aside/StudentMenus.vue"
+import instructorMenus from "@/components/container/aside/Menus.vue"
 import {ref} from "vue";
 import {get} from "@/net/index.js";
 import {useUserInfoStore} from "@/store/index.js";
@@ -24,7 +25,8 @@ store.isCollapse = !!(phone() || isWeiXin());
       <el-container>
         <el-aside :width="store.isCollapse ? '63.2px' : '230px'">
           <el-scrollbar style="height: calc(100vh - 55px)">
-            <menus style="height: 100%"></menus>
+            <instructorMenus style="height: 100%" v-if="store.user.role.includes('instructor')"></instructorMenus>
+            <studentMenus style="height: 100%" v-else></studentMenus>
           </el-scrollbar>
         </el-aside>
         <el-container>

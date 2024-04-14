@@ -1,10 +1,9 @@
 <script setup>
-import taskIssue from "@/components/container/main/taskList/TaskIssue.vue"
-import {ref, watch, reactive} from "vue";
+import {watch, reactive} from "vue";
 import lightCard from "@/components/container/main/taskList/LightCard.vue";
 import taskTag from "@/components/container/main/taskList/TaskTag.vue"
 import {accessHeader, get} from "@/net/index.js";
-import {Promotion, Clock} from "@element-plus/icons-vue";
+import {Clock} from "@element-plus/icons-vue";
 import {useUserInfoStore} from "@/store/index.js";
 import axios from "axios";
 import {ElMessage} from "element-plus";
@@ -12,7 +11,6 @@ import {dateFormat} from "@/utils/methodUtil.js";
 import router from "@/router/index.js";
 
 const store = useUserInfoStore();
-const editorRef = ref(false);
 const allYear = [2024, 2023, 2022, 2021, 2020];
 const allSemester = [1, 2];
 const tasks = reactive({
@@ -111,10 +109,6 @@ sendGet();
           </el-select>
           <el-button @click="updateTaskAfterIssue">查询</el-button>
         </div>
-        <el-button type="success" plain @click="editorRef = true">
-          <el-icon><Promotion/></el-icon>
-          发布任务
-        </el-button>
       </div>
       <el-divider style="margin: 5px 0 0 0"/>
       <transition name="el-fade-in" mode="out-in">
@@ -123,7 +117,7 @@ sendGet();
                v-infinite-scroll="getSelectedTask"
           >
             <lightCard v-for="item in tasks.selectedTaskList" :key="item.taskId" class="task-card"
-                       @click="router.push('/instructor/task/task-detail/' + item.taskId)"
+                       @click="router.push('/index/task/task-detail/' + item.taskId)"
             >
               <div style="max-width: 100px">
                 <span style="font-weight: bold;font-size: 16px">{{item.title}}</span>
@@ -145,7 +139,6 @@ sendGet();
       </transition>
       <el-button @click="console.log(isSelectAll())">heloo</el-button>
 
-      <taskIssue :show="editorRef"  @success="editorRef = false;updateTaskAfterIssue()" @close="editorRef = false"/>
     </div>
   </div>
 </template>

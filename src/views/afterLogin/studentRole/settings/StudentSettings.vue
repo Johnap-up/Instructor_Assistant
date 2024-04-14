@@ -1,34 +1,37 @@
 <script setup>
 import card from "@/components/container/main/setting/card.vue";
 import {User, Message, Refresh, Paperclip, Document, EditPen, Lock, Key} from '@element-plus/icons-vue'
-import {ref, computed, reactive} from "vue";
+import {ref, reactive} from "vue";
 import {useUserInfoStore} from "@/store/index.js";
-import {validatePhone} from "@/utils/validateRules.js";
 import {post, get, accessHeader} from "@/net/index.js";
 import {ELNOTIFICATION_OFFSET} from "@/utils/constUtil.js";
-import {timerFn} from "@/utils/methodUtil.js";
+import {timerFn, getCurrentSemester} from "@/utils/methodUtil.js";
 import {ElMessage} from "element-plus";
-import {validatePassword} from "@/utils/validateRules.js";
+import {validatePassword, validatePhone, validateQQ} from "@/utils/validateRules.js";
 import axios from "axios";
 
 const myTime = timerFn();
 const store = useUserInfoStore();
-const registerTime = computed(() => new Date(store.user.registerTime).toLocaleString())
-const tagType = ["primary", "success", "info", "warning", "danger"];
 const changeableFormRef = ref();
 const emailFormRef = ref();
 const passwordFormRef = ref();
 const unchangeableDetails = reactive({
+  sid: "",    //学号
   username: "",
   gender: 1,
+  dormitory: "",
+  room: "",
+  classroom: 0,
+  qq: "",
+  phone: "",
   institute: "",
-  grade: "",
-  annex_class: ["21班","22班","23班"],
-  experience: "ciallo",
-  tid: ""
+  grade: 0,
+  instructor: {},
+  email:"",
 })
 const changeableDetails = reactive({
-  phone: "13576072541"
+  phone: "13576072541",
+  qq: '1418973674',
 })
 const emailForm = reactive({
   email: "",
@@ -49,7 +52,10 @@ const rule = {
   ],
   phone: [
     {validator: validatePhone, trigger: ['blur', 'change']}
-  ]
+  ],
+  qq: [
+    {validator: validateQQ, trigger: ['blur', 'change']}
+  ],
 }
 const rule_password = {
   password: [
@@ -80,7 +86,7 @@ function saveChangeableDetails(){
   changeableFormRef.value.validate(valid => {
     if (valid) {
       loading.changeable = true;
-      post("/api/user/save-details", changeableDetails, ()=>{
+      post("/student/save-student-details", changeableDetails, ()=>{
         ElNotification({
           title: "Success!",
           message: "您的个人信息已成功修改！",
@@ -175,16 +181,21 @@ function uploadSuccess(response){
   store.user.avatar = response.data;
   store.isLoading.avatarUpload = false;
 }
-get("/api/user/details", (data) => {
-  unchangeableDetails.username = store.user.name;
-  emailForm.email = store.user.email;
+get(`/student/student-detail?sid=${store.user.username}`, (data) => {
+  unchangeableDetails.sid = data.sid || '114514';
+  unchangeableDetails.username = data.name;
   unchangeableDetails.gender = data.gender;
+  unchangeableDetails.dormitory = data.dormitory;
+  unchangeableDetails.room = data.room;
+  unchangeableDetails.classroom = data.classroom;
   unchangeableDetails.institute = data.institute;
   unchangeableDetails.grade = data.grade;
-  unchangeableDetails.annex_class = data.annex_class?.split(",");
-  unchangeableDetails.experience = data.experience;
-  unchangeableDetails.tid = data.tid;
+  unchangeableDetails.instructor = data.instructor;
+
+  changeableDetails.qq = data.qq;
   changeableDetails.phone = data.phone;
+
+  emailForm.email = store.user.email;
   loading.allCards = false;
 })
 </script>
@@ -209,26 +220,36 @@ get("/api/user/details", (data) => {
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="年级">
-                <el-input disabled :placeholder="unchangeableDetails.grade"/>
+                <el-input disabled :placeholder=" '' + unchangeableDetails.grade"/>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="教学号">
-                <el-input disabled :placeholder="unchangeableDetails.tid"/>
+              <el-form-item label="学号">
+                <el-input disabled :placeholder="unchangeableDetails.sid"/>
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="管理班级">
-            <div class="tag-box">
-              <el-check-tag checked  v-for="(item, index) in unchangeableDetails.annex_class" :type="tagType[index%5]"  effect="plain">{{item + "班"}}</el-check-tag>
-            </div>
-          </el-form-item>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="宿舍">
+                <el-input disabled :placeholder="store.student.dormitoryEnum[unchangeableDetails.dormitory] + unchangeableDetails.room"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="班级">
+                <el-input disabled :placeholder="'' + unchangeableDetails.classroom"/>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
       </card>
       <card class="middle-card card-public" :icon="Document" title="信息设置" desc="您可以在这里修改一些信息">
         <el-form ref="changeableFormRef" :rules="rule" :model="changeableDetails" label-position="top" style="margin:0 10px 10px 10px">
           <el-form-item label="手机号" prop="phone">
             <el-input v-model="changeableDetails.phone" maxlength="11"/>
+          </el-form-item>
+          <el-form-item label="QQ号" prop="qq">
+            <el-input v-model="changeableDetails.qq" maxlength="11"/>
           </el-form-item>
           <div>
             <el-button @click="saveChangeableDetails" :icon="Refresh" type="success" :loading="loading.changeable">保存信息</el-button>
@@ -293,16 +314,17 @@ get("/api/user/details", (data) => {
                   <el-button size="small" round type="danger" plain>修改头像</el-button>
                 </el-upload>
               </div>
-              <div style="font-weight: bold">你好, {{store.user.name}}</div>
+              <div style="font-weight: bold">你好, {{unchangeableDetails.username}}</div>
             </div>
           </div>
           <el-divider style="margin: 10px 0"/>
           <div class="experience">
-            {{unchangeableDetails.experience || "暂无个人简介~"}}
+            <div>{{"导员：" + unchangeableDetails.instructor.name}}</div>
+            <div>{{"联系方式：" + unchangeableDetails.instructor.phone}}</div>
           </div>
         </card>
         <card style="font-size: 14px" class="card-public" >
-          <div style="margin-bottom: 10px">任期时间: {{registerTime}}</div>
+          <div style="margin-bottom: 10px">{{"当前学年：" + getCurrentSemester()}}</div>
           <div style="color: grey">欢迎使用导员助手平台</div>
         </card>
       </div>

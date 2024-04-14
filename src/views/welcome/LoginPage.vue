@@ -2,27 +2,28 @@
 import {Lock, User} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
 import {reactive, ref} from "vue";
-import {login} from "@/net/index.js"
+import {login} from "@/net/index.js";
 
 const form = reactive({
   username: '',
   password: '',
-  rememberMe: false         //通过localStorage来保存Authorization
+  rememberMe: false,         //通过localStorage来保存Authorization
+  role: "",
 })
 const formRef = ref();
 const rule = {
   username:[
-    {required:true, message:'请输入用户名'},
+    {required:true, message:'请输入账号'},
   ],
   password:[
     {required:true, message:'请输入密码'},
-  ]
+  ],
 }
 
 function userLogin(){
   formRef.value.validate((valid) => {
     if (valid){
-      login(form.username, form.password, form.rememberMe, ()=>{router.push("/index")})
+      login(form.username, form.password, form.rememberMe, form.role, ()=>{router.push("/instructor")})
     }
   })
 }
@@ -37,7 +38,7 @@ function userLogin(){
     <div style="margin-top: 50px">
       <el-form :model="form"  ref="formRef" :rules="rule">
         <el-form-item prop="username">
-          <el-input v-model="form.username" type="text" placeholder="用户名/邮箱">
+          <el-input v-model="form.username" type="text" placeholder="学号/邮箱">
             <template #prefix>
               <el-icon><User /></el-icon>
             </template>
@@ -50,6 +51,12 @@ function userLogin(){
             </template>
           </el-input>
         </el-form-item>
+<!--        <el-form-item prop="role" style="margin-bottom: 0">-->
+<!--          <el-radio-group v-model="form.role" style="margin-left: auto">-->
+<!--            <el-radio value="student" size="small">学生</el-radio>-->
+<!--            <el-radio value="instructor" size="small">导员</el-radio>-->
+<!--          </el-radio-group>-->
+<!--        </el-form-item>-->
         <el-row>
           <el-col :span="12" class="taLeft">
             <el-form-item prop="rememberMe">
