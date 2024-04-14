@@ -1,6 +1,5 @@
 <script setup>
 import {defineProps} from "vue";
-import {Female, Male} from "@element-plus/icons-vue";
 import {dateFormat} from "@/utils/methodUtil.js";
 import NoImage from "@/assets/image/NoImage.png"
 import {useUserInfoStore} from "@/store/index.js";
@@ -11,27 +10,27 @@ const store = useUserInfoStore();
 const props = defineProps({
   info: Object,
 });
-console.log(!!props.info.images)
+function dealNames(list){
+  let str = '';
+  for (let i = 0; i < list.length; i++) {
+    if (i === 2)
+      str+='\n';
+    str = str + list[i] + " "
+  }
+  return str;
+}
 </script>
 
 <template>
   <div class="record-main">
     <div class="record-main-left">
-        <el-avatar :src="store.avatarUserUrl(info.user.avatar) || defaultAvatar"
-                   :size="60"/>
-        <div class="desc" style="font-size: 14px; padding-left: 15px">
-          <span style="color: #5d5a5a;font-weight: bold">{{info.user.name}}</span>
-          <span style="font-size: 12px">{{info.user.sid}}</span>
-          <span style="color: hotpink" v-if="info.user.gender === 1">
-                <el-icon><Female/></el-icon>
-              </span>
-          <span style="color: dodgerblue" v-if="info.user.gender === 0">
-                <el-icon><Male/></el-icon>
-          </span>
-          <div class="desc" style="padding-top: 5px">{{dateFormat("YYYY-mm-dd HH:MM",new Date(info.submitTime))}}</div>
-          <div class="desc" style="padding-top: 10px">{{'Tel：' + info.user.phone}}</div>
-          <div class="desc" >{{'QQ：' + info.user.qq}}</div>
-        </div>
+      <el-avatar :src="defaultAvatar"
+                 :size="60"/>
+      <div class="desc" style="font-size: 14px; padding-left: 15px">
+        <span style="color: #5d5a5a;font-weight: bold">{{store.student.dormitoryEnum[info.user.dormitory] + info.user.room}}</span>
+        <div class="desc" style="padding-top: 5px">{{dateFormat("YYYY-mm-dd HH:MM",new Date(info.submitTime))}}</div>
+        <div class="desc" style="padding-top: 10px">{{dealNames(info.user.names)}}</div>
+      </div>
     </div>
     <div class="record-main-right">
       <div class="title-text">

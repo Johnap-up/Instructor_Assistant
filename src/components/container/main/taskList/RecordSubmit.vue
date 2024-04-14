@@ -12,6 +12,7 @@ import axios from "axios";
 const emits = defineEmits(['success']);
 const props = defineProps({
   taskId: String,
+  type: Number,
   defaultTitle: {
     default: '',
     type: String
@@ -25,7 +26,7 @@ const props = defineProps({
     type: String
   },
   handler:{
-    default: (editor, taskId, success) => {
+    default: (editor, taskId, type, success) => {
       post('/api/task/submit-record', {
         taskId: taskId,
         content: JSON.stringify(editor.text || {ops:[{insert:"无\n"}]}),
@@ -116,7 +117,7 @@ function submitRecord(){
     ElMessage.warning("请填写标题！");
     return;
   }
-  props.handler(editor, props.taskId, () => {
+  props.handler(editor, props.taskId, props.type, () => {
     emits('success');
   });
 }

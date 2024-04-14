@@ -2,7 +2,7 @@
 import {useUserInfoStore} from "@/store/index.js";
 import {get, post} from "@/net/index.js";
 import {useRoute} from "vue-router";
-import {reactive, ref} from "vue";
+import {reactive} from "vue";
 import {ArrowLeft, Female, Male} from "@element-plus/icons-vue";
 import {QuillDeltaToHtmlConverter} from "quill-delta-to-html";
 import card from "@/components/container/main/setting/card.vue"
@@ -11,11 +11,12 @@ import router from "@/router/index.js";
 import RecordSubmit from "@/components/container/main/taskList/RecordSubmit.vue";
 import defaultAvatar from "@/assets/image/defaultAvatar.png"
 import Record from "@/components/container/main/taskList/Record.vue";
+import CheckRoomRecord from "@/components/container/main/taskList/CheckRoomRecord.vue";
 import {ELNOTIFICATION_OFFSET} from "@/utils/constUtil.js";
+import {dateFormat} from "@/utils/methodUtil.js";
 
 
 const store = useUserInfoStore();
-const edit = ref(false);
 const route = useRoute();
 const taskId = route.params.taskId;
 const task = reactive({
@@ -36,15 +37,28 @@ const init = () => get(`api/task/task-detail?taskId=${taskId}`, data => {
   loadRecord();
 })
 init();
+
 function loadRecord(){
+  if (task.data.type !== 2)
+    loadNormalRecord();
+  else
+    loadCheckRoomRecord();
+}
+function loadNormalRecord(){
   get(`api/task/student-record?taskId=${taskId}`, data => {
     task.myRecord = data;
-    console.log(data)
     task.myRecord_show = true;
   })
 }
-function updateRecord(editor, taskId, success){
-  post(`/api/task/update-student-record`, {
+function loadCheckRoomRecord(){
+  get(`api/room/record?taskId=${taskId}`, data => {
+    task.myRecord = data;
+    task.myRecord_show = true;
+  })
+}
+function updateRecord(editor, taskId, type, success){
+  let url = type === 2 ? '/api/room/update-record' : '/api/task/update-student-record'
+  post(`${url}`, {
     taskId: taskId,
     content: JSON.stringify(editor.text || {ops:[{insert:"无\n"}]}),
     title: editor.title
@@ -65,6 +79,9 @@ function updateRecord(editor, taskId, success){
       offset: ELNOTIFICATION_OFFSET
     })
   })
+}
+function isExpire(task){
+  return task.endTime < new Date();
 }
 </script>
 
@@ -96,8 +113,11 @@ function updateRecord(editor, taskId, success){
             </div>
             <div class="desc">{{task.data.user.email}}</div>
             <el-divider style="margin: 10px 0"/>
-            <div style="text-align: left;margin: 0 5px">
+            <div style="text-align: left;margin: 5px">
               <div class="desc">手机号：{{task.data.user.phone}}</div>
+            </div>
+            <div style="text-align: left;margin: 5px;">
+              <div class="desc" style="color: #e85b28">截至时间：{{dateFormat("YYYY-mm-dd HH:MM",new Date(task.data.endTime))}}</div>
             </div>
           </div>
         </div>
@@ -105,14 +125,16 @@ function updateRecord(editor, taskId, success){
           <div class="task-content" v-html="convertToHtml(task.data.content)"></div>
         </div>
       </div>
-      <card class="border-radius-7" :card-header-style="cardHeaderStyle">
-        <RecordSubmit v-if="!task.myRecord" :task-id="taskId" @success="loadRecord()"/>
-        <RecordSubmit v-if="task.myRecord_show && task.myRecord" :task-id="taskId" :default-text="task.myRecord.content" :handler="updateRecord"
+      <card v-if="isExpire(task.data)" class="border-radius-7" :card-header-style="cardHeaderStyle">
+        <RecordSubmit v-if="!task.myRecord" :type="task.data.type" :task-id="taskId" @success="loadRecord()"/>
+        <RecordSubmit v-if="task.myRecord_show && task.myRecord" :type="task.data.type" :task-id="taskId"
+                      :default-text="task.myRecord.content" :handler="updateRecord"
                       @success="loadRecord()" :default-title="task.myRecord.title" default-show-text="点我编辑回复"/>
       </card>
       <transition name="el-fade-in" mode="out-in">
         <card v-if="task.myRecord_show && task.myRecord" class="border-radius-7" :card-header-style="cardHeaderStyle">
-          <Record :info="task.myRecord"/>
+          <Record v-if="task.data.type !== 2" :info="task.myRecord"/>
+          <CheckRoomRecord v-else :info="task.myRecord"></CheckRoomRecord>
         </card>
       </transition>
     </div>

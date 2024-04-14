@@ -11,6 +11,7 @@ import router from "@/router/index.js";
 import interactButton from "@/components/container/main/taskList/InteractButton.vue"
 import taskIssue from "@/components/container/main/taskList/TaskIssue.vue"
 import Record from "@/components/container/main/taskList/Record.vue";
+import CheckRoomRecord from "@/components/container/main/taskList/CheckRoomRecord.vue";
 import {ElMessage} from "element-plus";
 import defaultAvatar from "@/assets/image/defaultAvatar.png"
 
@@ -22,7 +23,8 @@ const taskId = route.params.taskId;
 const task = reactive({
   data:null,
   submitRecords:[],
-  page: 1
+  page: 1,
+  record_show: false
 })
 const cardHeaderStyle = {};
 function convertToHtml(content){
@@ -46,6 +48,7 @@ function updateTask(editor){
 }
 const init = () => get(`api/task/task-detail?taskId=${taskId}`, data => {
   task.data = data;
+  task.record_show = true;
   loadSubmitRecords(1);
 })
 init();
@@ -53,9 +56,14 @@ init();
 function loadSubmitRecords(page){
   task.submitRecords = null;
   task.page = page;
-  get(`/api/task/records?taskId=${taskId}&page=${page - 1}`, data => {
-    task.submitRecords = data;
-  })
+  if (task.data.type !== 2)
+    get(`/api/task/records?taskId=${taskId}&page=${page - 1}`, data => {
+      task.submitRecords = data;
+    })
+  else
+    get(`/api/room/records?taskId=${taskId}&page=${page - 1}`, data => {
+      task.submitRecords = data;
+    })
 }
 </script>
 
@@ -101,9 +109,12 @@ function loadSubmitRecords(page){
           <div class="task-content" v-html="convertToHtml(task.data.content)"></div>
         </div>
       </div>
-      <card class="border-radius-7" :card-header-style="cardHeaderStyle">
-        <div class="record-wrapper" v-for="item in task.submitRecords" :key="item.id">
+      <card v-if="task.record_show && task.data" class="border-radius-7" :card-header-style="cardHeaderStyle">
+        <div v-if="task.data.type !==2 " class="record-wrapper" v-for="item in task.submitRecords" :key="item.id">
           <Record :info="item"/>
+        </div>
+        <div v-else class="record-wrapper" v-for="item in task.submitRecords" :key="item.id">
+          <CheckRoomRecord :info="item"/>
         </div>
       </card>
       <div style="width: fit-content;margin: 20px auto">
