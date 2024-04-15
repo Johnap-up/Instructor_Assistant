@@ -91,7 +91,7 @@ const shortcuts = [
     value: () => {
       const end = new Date()
       const start = new Date()
-      end.setDate(start.getDay() + 1)
+      end.setDate(start.getDate() + 1)
       return [start, end]
     },
   },
