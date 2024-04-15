@@ -81,7 +81,7 @@ function updateRecord(editor, taskId, type, success){
   })
 }
 function isExpire(task){
-  return task.endTime < new Date();
+  return new Date(task.endTime) < new Date();
 }
 </script>
 
@@ -125,7 +125,7 @@ function isExpire(task){
           <div class="task-content" v-html="convertToHtml(task.data.content)"></div>
         </div>
       </div>
-      <card v-if="isExpire(task.data)" class="border-radius-7" :card-header-style="cardHeaderStyle">
+      <card v-if="!isExpire(task.data)" class="border-radius-7" :card-header-style="cardHeaderStyle">
         <RecordSubmit v-if="!task.myRecord" :type="task.data.type" :task-id="taskId" @success="loadRecord()"/>
         <RecordSubmit v-if="task.myRecord_show && task.myRecord" :type="task.data.type" :task-id="taskId"
                       :default-text="task.myRecord.content" :handler="updateRecord"

@@ -130,6 +130,7 @@ sendGet();
                 <div class="task-content">{{item.text}}</div>
               </div>
               <div class="card-right">
+
                 <taskTag :type="item.type"/>
                 <div style="margin-left: 7px;display: flex;max-width: 200px">
                   <div style="font-size: 13px;font-weight:bold;color: #b743fa;margin-right: auto">{{item.name}}</div>

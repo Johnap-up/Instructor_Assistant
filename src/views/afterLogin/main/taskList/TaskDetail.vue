@@ -2,7 +2,7 @@
 import {useUserInfoStore} from "@/store/index.js";
 import {get, post} from "@/net/index.js";
 import {useRoute} from "vue-router";
-import {reactive, ref} from "vue";
+import {reactive, ref, nextTick} from "vue";
 import {ArrowLeft, Female, Male, EditPen} from "@element-plus/icons-vue";
 import {QuillDeltaToHtmlConverter} from "quill-delta-to-html";
 import card from "@/components/container/main/setting/card.vue"
@@ -14,6 +14,9 @@ import Record from "@/components/container/main/taskList/Record.vue";
 import CheckRoomRecord from "@/components/container/main/taskList/CheckRoomRecord.vue";
 import {ElMessage} from "element-plus";
 import defaultAvatar from "@/assets/image/defaultAvatar.png"
+import {dateFormat} from "@/utils/methodUtil.js";
+import LightCard from "@/components/container/main/taskList/LightCard.vue";
+import * as echarts from 'echarts';
 
 
 const store = useUserInfoStore();
@@ -25,6 +28,13 @@ const task = reactive({
   submitRecords:[],
   page: 1,
   record_show: false
+})
+const doUndo = reactive({
+  showFlag: false,
+  'do': null,
+  'undo': null,
+  doOrUndo: null,
+  title: '',
 })
 const cardHeaderStyle = {};
 function convertToHtml(content){
@@ -50,6 +60,7 @@ const init = () => get(`api/task/task-detail?taskId=${taskId}`, data => {
   task.data = data;
   task.record_show = true;
   loadSubmitRecords(1);
+  getDoUndo(data.type);
 })
 init();
 
@@ -65,6 +76,70 @@ function loadSubmitRecords(page){
       task.submitRecords = data;
     })
 }
+
+function getDoUndo(type){
+  const url = type === 2 ? `/api/room/do-undo?taskId=${taskId}` : `/api/task/do-undo?taskId=${taskId}`;
+  get(url, data => {
+    doUndo.do = data.do;
+    doUndo.undo = data.undo;
+    doUndo.doOrUndo = data.undo
+    doUndo.showFlag = true;
+    const option = {
+      tooltip: {
+        // trigger: 'inside'
+        trigger: 'item'
+      },
+      legend: {
+        top: '5%',
+        left: 'center'
+      },
+      title:{
+        text:`已提交 ${doUndo.do.length + '/' + (doUndo.undo.length + doUndo.do.length)}`,
+        left:'center',
+        top:'center',
+      },
+      series: [
+        {
+          name: 'Access From',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          label: {
+            show: true,
+            formatter: '{b}\n{c}',
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 20,
+              fontWeight: 'bold',
+              formatter: '{b}\n{c}'
+            },
+          },
+          labelLine: {
+            length: 0,
+            length2: 0,
+            maxSurfaceAngle: 1
+          },
+          data: [
+            { value: doUndo.do.length, name: '已交' },
+            { value: doUndo.undo.length, name: '未交' },
+          ]
+        }
+      ]
+    };
+    nextTick(()=>{
+      const myCharts = echarts.init(document.getElementById("myCharts"));
+      myCharts.setOption(option);
+      myCharts.on('click', function(params) {
+        if (params.name === '已交')
+          doUndo.doOrUndo = doUndo.do;
+        else
+          doUndo.doOrUndo = doUndo.undo;
+      });
+    })
+  })
+}
 </script>
 
 <template>
@@ -77,6 +152,7 @@ function loadSubmitRecords(page){
             <taskTag :type="task.data.type"/>
             <span style="font-weight: bold;">{{task.data.title}}</span>
           </div>
+          <span style="color: grey;font-size: 12px;padding-top: 10px">{{dateFormat("YYYY-mm-dd HH:MM", new Date(task.data.issueTime))}}</span>
         </card>
       </div>
       <div class="task-main">
@@ -111,10 +187,10 @@ function loadSubmitRecords(page){
       </div>
       <card v-if="task.record_show && task.data" class="border-radius-7" :card-header-style="cardHeaderStyle">
         <div v-if="task.data.type !==2 " class="record-wrapper" v-for="item in task.submitRecords" :key="item.id">
-          <Record :info="item"/>
+          <Record v-if="item.submitTime" :info="item"/>
         </div>
         <div v-else class="record-wrapper" v-for="item in task.submitRecords" :key="item.id">
-          <CheckRoomRecord :info="item"/>
+          <CheckRoomRecord v-if="item.submitTime" :info="item"/>
         </div>
       </card>
       <div style="width: fit-content;margin: 20px auto">
@@ -131,7 +207,44 @@ function loadSubmitRecords(page){
                :default-text="task.data.content" :default-title="task.data.title" :submit="updateTask"></taskIssue>
     <div class="right-card border-radius-7">
       <card class="border-radius-7 card-entity">
-        <div>ciallo</div>
+        <div v-if="doUndo.showFlag" style="width: 300px;height: 330px">
+          <div style="height: 400px;" id="myCharts" ></div>
+        </div>
+      </card>
+      <card v-if="doUndo.showFlag" class="border-radius-7" style="margin-top: 10px;height: 250px;overflow: hidden">
+        <LightCard>
+          <div v-if="task.data.type !== 2" style="display: flex;justify-content: space-between">
+            <div>姓名学号</div>
+            <div style="font-size: 12px;padding-top: 2px">qq</div>
+          </div>
+          <div v-else style="display: flex;justify-content: space-between">
+            <div>宿舍楼</div>
+            <div style="font-size: 12px;padding-top: 2px">寝室</div>
+          </div>
+        </LightCard>
+        <transition name="el-fade-in" mode="out-in">
+          <div v-if="task.data.type !== 2">
+            <el-scrollbar height="250px">
+              <LightCard v-for="item in doUndo.doOrUndo">
+                <div style="display: flex;justify-content: space-between;color: grey">
+                  <div>{{item.name + item.sid}}</div>
+                  <div style="font-size: 12px;padding-top: 2px">{{item.qq}}</div>
+                </div>
+              </LightCard>
+            </el-scrollbar>
+          </div>
+          <div v-else>
+            <el-scrollbar height="250px">
+              <LightCard v-for="item in doUndo.doOrUndo">
+                <div style="display: flex;justify-content: space-between;color: grey">
+                  <div>{{store.student.dormitoryEnum[item.dormitory]}}</div>
+                  <div style="font-size: 12px;padding-top: 2px">{{item.room}}</div>
+                </div>
+              </LightCard>
+            </el-scrollbar>
+          </div>
+        </transition>
+
       </card>
     </div>
   </div>
@@ -148,7 +261,7 @@ function loadSubmitRecords(page){
     position: sticky;
     top: 10px;
     max-width: 350px;
-    width: 300px;
+    width: 350px;
     max-height: 500px;
 
     .card-entity{
@@ -207,5 +320,7 @@ function loadSubmitRecords(page){
 .border-radius-7{
   border-radius: 7px;
 }
-
+.chart {
+  height: 400px;
+}
 </style>
