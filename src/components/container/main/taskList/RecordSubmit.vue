@@ -27,8 +27,7 @@ const props = defineProps({
   },
   handler:{
     default: (editor, taskId, type, success) => {
-      const url = type !== 2 ? '/api/task/submit-record' : '/api/room/submit-record';
-      post(url, {
+      post('/api/task/submit-record', {
         taskId: taskId,
         content: JSON.stringify(editor.text || {ops:[{insert:"无\n"}]}),
         title: editor.title

@@ -11,6 +11,7 @@ const store = useUserInfoStore();
 const props = defineProps({
   info: Object,
 });
+console.log(!!props.info.images)
 </script>
 
 <template>
@@ -43,7 +44,7 @@ const props = defineProps({
           :zoom-rate="1.2"
           :max-scale="7"
           :min-scale="0.2"
-          :preview-src-list="info.images === null||info.images.length ? info.images : [NoImage]"
+          :preview-src-list="info.images.length ? info.images : [NoImage]"
           :initial-index="4"
           fit="cover"
       />

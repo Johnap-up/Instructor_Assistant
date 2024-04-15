@@ -48,11 +48,6 @@ const router = createRouter({
           component: () => import("@/views/afterLogin/main/studentManage/CrudPage.vue")
         },
         {
-          path: "charts",
-          name: "authorized-charts",
-          component: () => import("@/views/afterLogin/main/charts/temp.vue")
-        },
-        {
           path: "task",
           name: "authorized-task",
           component:() => import("@/views/afterLogin/main/taskList/Task.vue"),
