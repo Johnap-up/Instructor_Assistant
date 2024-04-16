@@ -154,6 +154,7 @@ get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id�
       <div style="display: flex;width: 80%;height: 70%;align-items: center">
         <el-button @click="delSelected">删除选中</el-button>
         <el-button @click="handleInsert">添加学生</el-button>
+        <el-button @click="handleInsert">Excel导入</el-button>
         <div style="margin-left: auto; display: flex;width: 400px">
           <el-input :prefix-icon="Search" v-model="search.name" size="default" placeholder="搜索姓名" style="width: 150px;margin-left: auto"/>
           <el-input :prefix-icon="Search" v-model="search.classroom" size="default" placeholder="搜索班级" style="width: 150px;margin-left: auto"/>

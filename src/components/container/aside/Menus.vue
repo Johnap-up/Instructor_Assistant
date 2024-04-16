@@ -1,7 +1,7 @@
 <script setup>
 import {
   Menu as IconMenu,
-  Setting, Bell, Avatar, List, Flag, MostlyCloudy, HomeFilled, Calendar, PieChart, Edit, Upload, SetUp
+  Setting, Avatar, List, HomeFilled, PieChart, Edit, Upload, SetUp
 } from '@element-plus/icons-vue'
 import {useUserInfoStore} from "@/store/index.js";
 
@@ -41,39 +41,29 @@ const store = useUserInfoStore();
           自定义模板
         </el-menu-item>
       </el-sub-menu>
-      <el-sub-menu index="2-2">
-        <template #title>
-          <el-icon><PieChart /></el-icon>
-          数据图表
-        </template>
-        <el-menu-item index="2-2-1">
-          <el-icon><Flag /></el-icon>
-          青年大学习
-        </el-menu-item>
-        <el-menu-item index="2-2-2">
-          <el-icon><MostlyCloudy /></el-icon>
-          线上查寝
-        </el-menu-item>
-      </el-sub-menu>
+      <el-menu-item index="/instructor/charts">
+        <el-icon><PieChart /></el-icon>
+        数据图表
+      </el-menu-item>
     </el-sub-menu>
-    <el-menu-item index="/instructor/charts">
+    <el-menu-item index="xxxx">
       <el-icon><icon-menu /></el-icon>
       <span>日志记录</span>
     </el-menu-item>
-    <el-menu-item index="/instructor/student-setting">
-      <el-icon><Bell /></el-icon>
-      <span>失物招领</span>
-    </el-menu-item>
+<!--    <el-menu-item index="/instructor/student-setting">-->
+<!--      <el-icon><Bell /></el-icon>-->
+<!--      <span>失物招领</span>-->
+<!--    </el-menu-item>-->
     <el-menu-item index="/instructor/crud-page">
       <el-icon><Avatar /></el-icon>
       <span>考勤管理</span>
     </el-menu-item>
-    <el-menu-item index="6">
-      <el-badge :value="10"  class="item">
-        <el-icon ><Calendar /></el-icon>
-      </el-badge>
-      <span>日程安排</span>
-    </el-menu-item>
+<!--    <el-menu-item index="6">-->
+<!--      <el-badge :value="10"  class="item">-->
+<!--        <el-icon ><Calendar /></el-icon>-->
+<!--      </el-badge>-->
+<!--      <span>日程安排</span>-->
+<!--    </el-menu-item>-->
     <el-menu-item index="/instructor/user-setting">
       <el-icon><setting /></el-icon>
       <span>设置</span>

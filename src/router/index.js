@@ -50,7 +50,7 @@ const router = createRouter({
         {
           path: "charts",
           name: "authorized-charts",
-          component: () => import("@/views/afterLogin/main/charts/temp.vue")
+          component: () => import("@/views/afterLogin/main/charts/AllCharts.vue")
         },
         {
           path: "task",

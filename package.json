@@ -21,6 +21,7 @@
     "quill-delta-to-html": "^0.12.1",
     "quill-image-resize-vue": "^1.0.4",
     "quill-image-super-solution-module": "^2.0.1",
+    "qweather-icons": "^1.6.0",
     "vue": "^3.4.21",
     "vue-echarts": "^6.6.9",
     "vue-router": "^4.3.0"

@@ -100,7 +100,7 @@ function getDoUndo(type){
       },
       series: [
         {
-          name: 'Access From',
+          name: 'Submission status',
           type: 'pie',
           radius: ['40%', '70%'],
           avoidLabelOverlap: false,
@@ -129,7 +129,11 @@ function getDoUndo(type){
       ]
     };
     nextTick(()=>{
-      const myCharts = echarts.init(document.getElementById("myCharts"));
+      let myCharts = echarts.getInstanceByDom(document.getElementById("myCharts"));
+      if(!!myCharts){
+        myCharts.dispose();
+      }
+      myCharts = echarts.init(document.getElementById("myCharts"));
       myCharts.setOption(option);
       myCharts.on('click', function(params) {
         if (params.name === '已交')
