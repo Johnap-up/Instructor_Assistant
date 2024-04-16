@@ -221,7 +221,7 @@ const editorOption = {          //quill配置
         </div>
       </template>
       <div style="display: flex;gap: 10px; margin-bottom: 10px">
-        <div style="width: 150px">
+        <div v-if="!props.isUpdate" style="width: 150px">
           <el-select clearable placeholder="请选择任务类型" v-model="editor.type" value-key="id">
             <el-option v-for="item in store.task.types" :key="item.id" :value="item" :label="item.name">
               <div style="display: flex;align-items: center">

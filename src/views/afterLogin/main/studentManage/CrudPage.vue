@@ -1,8 +1,8 @@
 <script setup>
 import {get, post} from "@/net/index.js"
 import {useUserInfoStore} from "@/store/index.js";
-import {InfoFilled} from '@element-plus/icons-vue'
-import {ref, reactive} from 'vue';
+import {InfoFilled, Search} from '@element-plus/icons-vue'
+import {ref, reactive, computed} from 'vue';
 import {ELNOTIFICATION_OFFSET, confirmType} from "@/utils/constUtil.js";
 import {validatePhone, validateQQ, validateSid} from "@/utils/validateRules.js";
 
@@ -132,6 +132,15 @@ const delSelected = () => {               //删除选中
 const rowKey = (row) => {           //用于生成Key
   return row.sid;
 }
+const search = reactive({
+  name: '',
+  classroom: null
+});
+const filterTableData = computed(() => {
+  return store.student.studentList
+      .filter((data) => !search.name || data.name.includes(search.name))
+      .filter((data) => !search.classroom || data.classroom === parseInt(search.classroom));
+})
 get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id来辨识是哪个账户发送的
   store.student.studentList = data.studentList;
   store.student.learningDoneRate = data.map["1"];
@@ -142,13 +151,17 @@ get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id�
 <template>
   <div class="outerBox">
     <div class="globalSettings">
-      <div style="width: 80%;height: 70%;background-color: red">
+      <div style="display: flex;width: 80%;height: 70%;align-items: center">
         <el-button @click="delSelected">删除选中</el-button>
         <el-button @click="handleInsert">添加学生</el-button>
+        <div style="margin-left: auto; display: flex;width: 400px">
+          <el-input :prefix-icon="Search" v-model="search.name" size="default" placeholder="搜索姓名" style="width: 150px;margin-left: auto"/>
+          <el-input :prefix-icon="Search" v-model="search.classroom" size="default" placeholder="搜索班级" style="width: 150px;margin-left: auto"/>
+        </div>
       </div>
     </div>
     <div class="tableBox">
-      <el-table :data="store.student.studentList" style="width: 100%"
+      <el-table v-if="store.student.studentList !== []" :data="filterTableData" style="width: 100%"
                 :table-layout="tableLayout" stripe border highlight-current-row height="calc(100vh - 55px - 60px)"
                 ref="tableRef"
                 :row-key="rowKey"
@@ -324,7 +337,7 @@ get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id�
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: #13ce66;
+  background-color: #5c5d5c;
 }
 
 .input-with-select .el-input-group__prepend {

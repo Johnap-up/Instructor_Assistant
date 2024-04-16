@@ -45,7 +45,7 @@ function convertToHtml(content){
 function updateTask(editor){
   post("/api/task/update-task", {
     taskId: taskId,
-    type: editor.type.id,
+    // type: editor.type.id,
     title: editor.title,
     content: editor.text || {ops:[{insert:"无\n"}]},
     issueTime: editor.timePicker[0],
