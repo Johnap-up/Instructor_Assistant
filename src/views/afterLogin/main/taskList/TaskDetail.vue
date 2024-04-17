@@ -1,9 +1,9 @@
 <script setup>
 import {useUserInfoStore} from "@/store/index.js";
-import {get, post} from "@/net/index.js";
+import {download, get, post} from "@/net/index.js";
 import {useRoute} from "vue-router";
 import {reactive, ref, nextTick} from "vue";
-import {ArrowLeft, Female, Male, EditPen} from "@element-plus/icons-vue";
+import {ArrowLeft, Female, Male, EditPen, Download} from "@element-plus/icons-vue";
 import {QuillDeltaToHtmlConverter} from "quill-delta-to-html";
 import card from "@/components/container/main/setting/card.vue"
 import taskTag from "@/components/container/main/taskList/TaskTag.vue"
@@ -144,6 +144,10 @@ function getDoUndo(type){
     })
   })
 }
+function downloadExcel(){
+  const url = task.data.type === 2 ? `/api/excel/download-CRRDoUndo?taskId=${taskId}` : `/api/excel/download-STRDoUndo?taskId=${taskId}`;
+  download(url, `完成率表`);
+}
 </script>
 
 <template>
@@ -179,11 +183,16 @@ function getDoUndo(type){
               <div class="desc">手机号：{{task.data.user.phone}}</div>
             </div>
           </div>
-          <interactButton style="margin-top: 10px" name="编辑帖子" color="dodgerblue"
-                          v-if="store.user.role.includes(task.data.user.role) && store.user.id === task.data.user.id"
-                          :check="false" @check="edit = true;">
-            <el-icon><EditPen/></el-icon>
-          </interactButton>
+          <div style="display: flex;flex-direction: column;align-items: center" v-if="store.user.role.includes(task.data.user.role) && store.user.id === task.data.user.id">
+            <interactButton style="margin-top: 10px" name="编辑任务" color="dodgerblue"
+                            :check="false" @check="edit = true;">
+              <el-icon><EditPen/></el-icon>
+            </interactButton>
+            <el-button  style="display:block;margin-top: 10px; width: 100px" type="primary" plain @click="downloadExcel">
+              名单导出<el-icon><Download /></el-icon>
+            </el-button>
+          </div>
+
         </div>
         <div class="task-main-right">
           <div class="task-content" v-html="convertToHtml(task.data.content)"></div>

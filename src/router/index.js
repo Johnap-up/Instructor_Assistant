@@ -53,6 +53,11 @@ const router = createRouter({
           component: () => import("@/views/afterLogin/main/charts/AllCharts.vue")
         },
         {
+          path: "logs",
+          name: "authorized-logs",
+          component: () => import("@/views/afterLogin/main/log/LogList.vue")
+        },
+        {
           path: "task",
           name: "authorized-task",
           component:() => import("@/views/afterLogin/main/taskList/Task.vue"),
@@ -86,6 +91,11 @@ const router = createRouter({
           name: "authorized-student-setting",
           component: () => import("@/views/afterLogin/studentRole/settings/StudentSettings.vue")
         },
+        // {
+        //   path: "logs",
+        //   name: "authorized-student-logs",
+        //   component: () => import("@/views/afterLogin/publicContent/LogList.vue")
+        // },
         {
           path: "task",
           name: "authorized-student-task",

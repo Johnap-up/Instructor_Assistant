@@ -1,5 +1,5 @@
 <script setup>
-import YaZi from '@/assets/image/YaZi.png';
+import page1 from "@/assets/image/maden/img4.png"
 
 
 </script>
@@ -7,7 +7,7 @@ import YaZi from '@/assets/image/YaZi.png';
 <template>
   <div class="outerBox">
     <div class="imageBox">
-      <el-image :src="YaZi" fit="cover" style="width: 100%; height: 100%"></el-image>
+      <el-image :src="page1" fit="cover" style="width: 100%; height: 100%"></el-image>
       <div class="welcomeTitle">
         <div class="fw30 fwBold ">欢迎来到导员助手</div>
         <div class="mt10">在这里你可以方便的管理本学院的学生信息, 并将统计信息导出</div>

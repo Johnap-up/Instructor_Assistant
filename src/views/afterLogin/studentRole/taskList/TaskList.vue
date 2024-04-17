@@ -137,7 +137,6 @@ sendGet();
           </div>
         </div>
       </transition>
-      <el-button @click="console.log(isSelectAll())">heloo</el-button>
 
     </div>
   </div>

@@ -26,9 +26,9 @@ const store = useUserInfoStore();
       <el-icon><List /></el-icon>
       所有任务
     </el-menu-item>
-    <el-menu-item index="3">
+    <el-menu-item index="/index/logs">
       <el-icon><icon-menu /></el-icon>
-      <span>提交记录</span>
+      <span>日志记录</span>
     </el-menu-item>
     <el-menu-item index="/index/student-setting222222">
       <el-icon><Bell /></el-icon>

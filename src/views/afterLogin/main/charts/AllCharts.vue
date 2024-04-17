@@ -237,19 +237,19 @@ function getCharts(){
         name: name + "班",
         type: 'line',
         stack: 'total',
-        // barWidth: '60%',
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          },
-          label: {
-            show: true,
-            fontSize: 20,
-            fontWeight: 'bold',
-          },
-        },
+        barWidth: '60%',
+        // emphasis: {
+        //   itemStyle: {
+        //     shadowBlur: 10,
+        //     shadowOffsetX: 0,
+        //     shadowColor: 'rgba(0, 0, 0, 0.5)'
+        //   },
+        //   label: {
+        //     show: true,
+        //     fontSize: 20,
+        //     fontWeight: 'bold',
+        //   },
+        // },
         label: {
           show: true,
           formatter: (params) => Math.round(params.value * 1000) / 10 + '%'
@@ -290,7 +290,7 @@ function getCharts(){
         xAxis: {
           type: 'category',
           boundaryGap: false,
-          data: () => {let list =[];data.forEach((d, index) => list.push(index + 1)); return list}
+          data: getXAxis(data)
         },
         yAxis: {
           type: 'value'
@@ -340,6 +340,14 @@ function getMapList(data){
   let list = [];
   for (let dataKey in data) {
     list.push(data[dataKey][2]);
+  }
+  return list;
+}
+function getXAxis(data){
+  let list = [];
+  for (let datKey in data) {
+    data[datKey].forEach((d, index) => list.push("第" + (index + 1) + "次" ))
+    break;
   }
   return list;
 }

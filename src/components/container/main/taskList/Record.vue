@@ -43,7 +43,7 @@ const props = defineProps({
           :zoom-rate="1.2"
           :max-scale="7"
           :min-scale="0.2"
-          :preview-src-list="info.images === null||info.images.length ? info.images : [NoImage]"
+          :preview-src-list="(info.images === null||info.images.length === 0) ? [NoImage] : info.images "
           :initial-index="4"
           fit="cover"
       />

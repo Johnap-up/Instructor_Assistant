@@ -4,12 +4,13 @@ import {ref, watch, reactive} from "vue";
 import lightCard from "@/components/container/main/taskList/LightCard.vue";
 import taskTag from "@/components/container/main/taskList/TaskTag.vue"
 import {accessHeader, get} from "@/net/index.js";
-import {Promotion, Clock} from "@element-plus/icons-vue";
+import {Promotion, Clock, Delete, InfoFilled} from "@element-plus/icons-vue";
 import {useUserInfoStore} from "@/store/index.js";
 import axios from "axios";
 import {ElMessage} from "element-plus";
 import {dateFormat} from "@/utils/methodUtil.js";
 import router from "@/router/index.js";
+import InteractButton from "@/components/container/main/taskList/InteractButton.vue";
 
 const store = useUserInfoStore();
 const editorRef = ref(false);
@@ -65,6 +66,14 @@ function getSelectedTask(){
     }
     if (!data || data < 10)
       tasks.end = true;
+  })
+}
+function deleteTask(taskId, success=()=>{}){
+  get(`/api/task/delete-task?taskId=${taskId}`,(data) => {
+    success()
+    ElMessage.success("删除成功")
+  }, (msg) => {
+    ElMessage.warning(msg)
   })
 }
 sendGet();
@@ -123,28 +132,46 @@ sendGet();
                v-infinite-scroll="getSelectedTask"
           >
             <lightCard v-for="item in tasks.selectedTaskList" :key="item.taskId" class="task-card"
-                       @click="router.push('/instructor/task/task-detail/' + item.taskId)"
-            >
-              <div style="max-width: 100px">
-                <span style="font-weight: bold;font-size: 16px">{{item.title}}</span>
-                <div class="task-content">{{item.text}}</div>
-              </div>
-              <div class="card-right">
 
-                <taskTag :type="item.type"/>
-                <div style="margin-left: 7px;display: flex;max-width: 200px">
-                  <div style="font-size: 13px;font-weight:bold;color: #b743fa;margin-right: auto">{{item.name}}</div>
-                  <div style="font-size: 12px;text-align: right;width: 125px;color: #9d650c;display: flex;justify-content: space-around">
-                    <el-icon size="14px"><Clock /></el-icon>
-                    <span>{{dateFormat("YYYY-mm-dd HH:MM",new Date(item.endTime))}}</span>
+            >
+              <div class="task-card" style="width: calc(100% - 80px)" @click="router.push('/instructor/task/task-detail/' + item.taskId)">
+                <div style="max-width: 100px">
+                  <span style="font-weight: bold;font-size: 16px">{{item.title}}</span>
+                  <div class="task-content">{{item.text}}</div>
+                </div>
+                <div class="card-right">
+                  <taskTag :type="item.type"/>
+                  <div style="margin-left: 7px;display: flex;max-width: 200px">
+                    <div style="font-size: 13px;font-weight:bold;color: #b743fa;margin-right: auto">{{item.name}}</div>
+                    <div style="font-size: 12px;text-align: right;width: 125px;color: #9d650c;display: flex;justify-content: space-around">
+                      <el-icon size="14px"><Clock /></el-icon>
+                      <span>{{dateFormat("YYYY-mm-dd HH:MM",new Date(item.endTime))}}</span>
+                    </div>
                   </div>
                 </div>
               </div>
+              <el-popconfirm
+                  width="220px"
+                  confirm-button-text="OK"
+                  cancel-button-text="No, Thanks"
+                  cancel-button-type="success"
+                  confirm-button-type="danger"
+                  :icon="InfoFilled"
+                  icon-color="#626AEF"
+                  :title="'确定删除该任务？'"
+                  @confirm="()=>{deleteTask(item.taskId,()=>{tasks.page = 0;sendGet();});}"
+              >
+                <template #reference>
+                  <interactButton style="" name="删除任务" color="dodgerblue"
+                                  :check="false">
+                    <el-icon><Delete /></el-icon>
+                  </interactButton>
+                </template>
+              </el-popconfirm>
             </lightCard>
           </div>
         </div>
       </transition>
-      <el-button @click="console.log(isSelectAll())">heloo</el-button>
 
       <taskIssue :show="editorRef"  @success="editorRef = false;updateTaskAfterIssue()" @close="editorRef = false"/>
     </div>
@@ -162,6 +189,7 @@ sendGet();
 .task-card{
   transition: scale .3s;
   display: flex;
+  align-items: center;
   &:hover{
     cursor: pointer;
     background-color: #f8f8f8;

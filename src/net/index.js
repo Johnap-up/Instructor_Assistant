@@ -127,9 +127,23 @@ function logout(success, failure = defaultFailure){
         success();
     },failure)
 }
+function download(url, fileName){
+    axios.get(url, {
+        responseType: 'blob',
+        headers: accessHeader()
+    }).then(res => {
+        console.log(res);
+        let a = document.createElement("a");
+        a.setAttribute('download', fileName);
+        a.href = window.URL.createObjectURL(res.data);
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    })
+}
 
 function unauthorized(){
     return !takeAccessToken();
 }
 
-export {login, logout, post, get, unauthorized, accessHeader, accessRole, deleteAccessToken, deleteAccessRole};
+export {login, logout, post, get, unauthorized, accessHeader, accessRole, deleteAccessToken, deleteAccessRole, download};

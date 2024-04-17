@@ -46,7 +46,7 @@ const store = useUserInfoStore();
         数据图表
       </el-menu-item>
     </el-sub-menu>
-    <el-menu-item index="xxxx">
+    <el-menu-item index="/instructor/logs">
       <el-icon><icon-menu /></el-icon>
       <span>日志记录</span>
     </el-menu-item>

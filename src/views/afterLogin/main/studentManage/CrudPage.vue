@@ -1,10 +1,12 @@
 <script setup>
-import {get, post} from "@/net/index.js"
+import {accessHeader, get, post, download} from "@/net/index.js"
 import {useUserInfoStore} from "@/store/index.js";
 import {InfoFilled, Search} from '@element-plus/icons-vue'
 import {ref, reactive, computed} from 'vue';
 import {ELNOTIFICATION_OFFSET, confirmType} from "@/utils/constUtil.js";
 import {validatePhone, validateQQ, validateSid} from "@/utils/validateRules.js";
+import axios from "axios";
+import {ElMessage} from "element-plus";
 
 const tableLayout = ref('fixed');
 const store = useUserInfoStore();
@@ -37,8 +39,8 @@ const dialogForm = reactive([{
   phone: '',
   classroom: 0
 }]);
-const newDormitoryEnum = (()=>{
-  let list =[];
+const newDormitoryEnum = (() => {
+  let list = [];
   for (let dormitoryEnumKey in store.student.dormitoryEnum) {
     list.push({
       label: store.student.dormitoryEnum[dormitoryEnumKey],
@@ -61,7 +63,7 @@ const handleInsert = () => {
   for (let dialogFormElementKey in dialogForm[0]) {
     if (typeof dialogForm[0][dialogFormElementKey] == 'string')
       dialogForm[0][dialogFormElementKey] = '';
-    else 
+    else
       dialogForm[0][dialogFormElementKey] = null;
   }
   dialogTableVisible.value = true;
@@ -88,7 +90,7 @@ const confirmEditOrInsert = () => {
           duration: 3000,
           offset: ELNOTIFICATION_OFFSET
         });
-        if (confirmNum === confirmType.edit){       //只有修改时才修改前端代码
+        if (confirmNum === confirmType.edit) {       //只有修改时才修改前端代码
           for (let key1 in dialogForm[0]) {     //修改前端代码
             if (rowEdited.hasOwnProperty(key1))
               rowEdited[key1] = dialogForm[0][key1];
@@ -119,6 +121,15 @@ const handleDelete = (sid, name) => {        //删除一个
     })
   })
 }
+
+function uploadSuccess() {
+  getList();
+  ElNotification({type: 'success', message: `上传成功`, duration: 3000, offset: ELNOTIFICATION_OFFSET});
+}
+function uploadError() {
+  ElNotification({type: 'success',message: `上传失败，请检查文件格式并重新上传`,duration: 3000,offset: ELNOTIFICATION_OFFSET});
+}
+
 const delSelected = () => {               //删除选中
   let rows = tableRef.value.getSelectionRows();   //获取勾选的row
   let list = [];
@@ -141,11 +152,17 @@ const filterTableData = computed(() => {
       .filter((data) => !search.name || data.name.includes(search.name))
       .filter((data) => !search.classroom || data.classroom === parseInt(search.classroom));
 })
-get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id来辨识是哪个账户发送的
-  store.student.studentList = data.studentList;
-  store.student.learningDoneRate = data.map["1"];
-  store.student.dormitoryDoneRate = data.map["2"];
-});
+function studentDownload(){
+  download('/api/excel/downloadAllStudents', "学生任务完成情况");
+}
+function getList(){
+  get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id来辨识是哪个账户发送的
+    store.student.studentList = data.studentList;
+    store.student.learningDoneRate = data.map["1"];
+    store.student.dormitoryDoneRate = data.map["2"];
+  });
+}
+getList();
 
 </script>
 <template>
@@ -154,10 +171,22 @@ get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id�
       <div style="display: flex;width: 80%;height: 70%;align-items: center">
         <el-button @click="delSelected">删除选中</el-button>
         <el-button @click="handleInsert">添加学生</el-button>
-        <el-button @click="handleInsert">Excel导入</el-button>
+        <el-upload
+            style="display: flex;align-items: center;margin-left: 12px"
+            accept=".xlsx,.xls"
+            :headers="accessHeader()"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+            :show-file-list="false" name="files"
+            method="post" :action="axios.defaults.baseURL + '/api/excel/student'">
+          <el-button>Excel导入</el-button>
+        </el-upload>
+        <el-button @click="studentDownload">名单导出</el-button>
         <div style="margin-left: auto; display: flex;width: 400px">
-          <el-input :prefix-icon="Search" v-model="search.name" size="default" placeholder="搜索姓名" style="width: 150px;margin-left: auto"/>
-          <el-input :prefix-icon="Search" v-model="search.classroom" size="default" placeholder="搜索班级" style="width: 150px;margin-left: auto"/>
+          <el-input :prefix-icon="Search" v-model="search.name" size="default" placeholder="搜索姓名"
+                    style="width: 150px;margin-left: auto"/>
+          <el-input :prefix-icon="Search" v-model="search.classroom" size="default" placeholder="搜索班级"
+                    style="width: 150px;margin-left: auto"/>
         </div>
       </div>
     </div>
@@ -207,11 +236,12 @@ get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id�
       </el-table>
     </div>
     <el-backtop target=".main-content-page .el-scrollbar__wrap" :right="20" :bottom="70"/>
-    <el-dialog :width="'50%'" v-model="dialogTableVisible" :title="'编辑 ' + dialogForm[0].name + ' 的信息'" width="800" draggable>
-      <el-form :model="dialogForm[0]" :rules="rule" ref="DialogFormRef" class="dialog-form" style="width: 100%" >
+    <el-dialog :width="'50%'" v-model="dialogTableVisible" :title="'编辑 ' + dialogForm[0].name + ' 的信息'" width="800"
+               draggable>
+      <el-form :model="dialogForm[0]" :rules="rule" ref="DialogFormRef" class="dialog-form" style="width: 100%">
         <el-row class="dialog-row" :gutter="8" justify="space-between">
           <el-col :span="8">
-            <el-form-item prop="sid" >
+            <el-form-item prop="sid">
               <el-input
                   v-model="dialogForm[0].sid"
                   style="max-width: 600px"
@@ -344,10 +374,12 @@ get(`/student/all-info?year=2023&semester=2`, (data) => {     //后端通过id�
 .input-with-select .el-input-group__prepend {
   background-color: var(--el-fill-color-blank);
 }
-.dialog-row{
+
+.dialog-row {
   margin-bottom: 5px;
 }
-.dialog-form{
+
+.dialog-form {
 }
 
 </style>
