@@ -11,7 +11,7 @@ import page1 from "@/assets/image/maden/img4.png"
       <div class="welcomeTitle">
         <div class="fw30 fwBold ">欢迎来到导员助手</div>
         <div class="mt10">在这里你可以方便的管理本学院的学生信息, 并将统计信息导出</div>
-        <div class="mt5">其他功能包括学生日常任务发布, 青年大学习统计, 失物招领, 线上查寝等</div>
+        <div class="mt5">其他功能包括学生日常任务发布, 青年大学习统计, 线上查寝等</div>
       </div>
     </div>
     <div class="rightCard">

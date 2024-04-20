@@ -18,7 +18,9 @@ function clickLogout() {
   logout(()=>{router.push("/")})
 }
 function goUrl(url){
-  window.open(url);
+  router.push(url);
+  // console.log(url);
+  // window.open(url);
 }
 const notification = ref([]);
 const loadNotification = () => get("/api/notification/list", data => {

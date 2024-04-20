@@ -140,7 +140,7 @@ function isExpire(task){
     </div>
     <div class="right-card border-radius-7">
       <card class="border-radius-7 card-entity">
-        <div>ciallo</div>
+        <div></div>
       </card>
     </div>
   </div>

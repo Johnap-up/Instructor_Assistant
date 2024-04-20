@@ -30,10 +30,10 @@ const store = useUserInfoStore();
       <el-icon><icon-menu /></el-icon>
       <span>日志记录</span>
     </el-menu-item>
-    <el-menu-item index="/index/student-setting222222">
-      <el-icon><Bell /></el-icon>
-      <span>失物招领</span>
-    </el-menu-item>
+<!--    <el-menu-item index="/index/student-setting222222">-->
+<!--      <el-icon><Bell /></el-icon>-->
+<!--      <span>失物招领</span>-->
+<!--    </el-menu-item>-->
     <el-menu-item index="/index/student-setting">
       <el-icon><setting /></el-icon>
       <span>设置</span>

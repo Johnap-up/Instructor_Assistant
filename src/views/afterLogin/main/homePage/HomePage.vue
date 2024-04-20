@@ -14,6 +14,7 @@ import {Calendar} from "@element-plus/icons-vue";
 
 const list = getList();
 console.log(list)
+
 function getList() {
   let list = [];
   list.push({img: img1, id: 1})
@@ -43,10 +44,11 @@ navigator.geolocation.getCurrentPosition(position => {
   })
 }, error => {
   console.info(error)
-  ElMessage.warning('位置信息获取超时，请检测网络设置，或者手动设置位置信息')
   get(`/api/homepage/weather?longitude=125.33060&latitude=43.821953`, data => {
     Object.assign(weather, data)
     weather.success = true
+  }, ()=>{
+    ElMessage.warning('位置信息获取超时，请检测网络设置，或者手动设置位置信息')
   })
 }, {
   timeout: 3000,
@@ -58,13 +60,15 @@ navigator.geolocation.getCurrentPosition(position => {
   <div class="outerBox">
     <el-carousel :interval="4000" type="card" height="250px" style="width: 80%">
       <el-carousel-item v-for="item in list" :key="item.id">
-        <el-image fit="fill" :src="item.img" ></el-image>
+        <el-image fit="fill" :src="item.img"></el-image>
       </el-carousel-item>
     </el-carousel>
     <div style="width:100%;display: flex;justify-content: space-around;margin-top: 20px">
       <LightCard style="margin-top: 10px;border-radius: 5px;box-shadow: 0 0 5px rgb(0,0,0,0.2);max-height: 250px">
         <div style="font-weight: bold">
-          <el-icon><Calendar/></el-icon>
+          <el-icon>
+            <Calendar/>
+          </el-icon>
           天气信息
         </div>
         <el-divider style="margin: 10px 0"/>
@@ -81,13 +85,14 @@ navigator.geolocation.getCurrentPosition(position => {
 </template>
 
 <style lang="less" scoped>
-.outerBox{
+.outerBox {
   box-sizing: border-box;
   margin: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .el-carousel__item h3 {
   color: #475669;
   opacity: 0.75;
@@ -103,12 +108,14 @@ navigator.geolocation.getCurrentPosition(position => {
 .el-carousel__item:nth-child(2n + 1) {
   background-color: #d3dce6;
 }
+
 .info-text {
   display: flex;
   justify-content: space-between;
   color: grey;
   font-size: 14px;
 }
+
 .friend-link {
   border-radius: 5px;
   overflow: hidden;

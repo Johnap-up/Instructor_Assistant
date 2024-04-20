@@ -53,7 +53,8 @@ function updateTask(editor){
   }, () => {
     ElMessage.success("任务更新成功")
     edit.value = false;
-    init();
+    updateTaskDetail();
+    // init();
   })
 }
 const init = () => get(`api/task/task-detail?taskId=${taskId}`, data => {
@@ -61,6 +62,10 @@ const init = () => get(`api/task/task-detail?taskId=${taskId}`, data => {
   task.record_show = true;
   loadSubmitRecords(1);
   getDoUndo(data.type);
+})
+const updateTaskDetail = () => get(`api/task/task-detail?taskId=${taskId}`, data => {
+  task.data = data;
+  task.record_show = true;
 })
 init();
 
@@ -151,8 +156,8 @@ function downloadExcel(){
 </script>
 
 <template>
-  <div class="outer-box">
-    <div class="task-page" v-if="task.data">
+  <div class="outer-box" v-if="task.record_show">
+    <div class="task-page" >
       <div class="task-main border-radius-7" style="position: sticky;top: 0;z-index: 10">
         <card style="display: flex;width: 100%" class="border-radius-7" :card-header-style="cardHeaderStyle" >
           <el-button :icon="ArrowLeft" type="info" size="small" plain round @click="router.push('/instructor/task/list')">返回列表</el-button>

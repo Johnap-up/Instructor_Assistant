@@ -36,10 +36,10 @@ const store = useUserInfoStore();
           <el-icon><Upload /></el-icon>
           任务发布
         </el-menu-item>
-        <el-menu-item index="2-1-2">
-          <el-icon><Edit /></el-icon>
-          自定义模板
-        </el-menu-item>
+<!--        <el-menu-item index="2-1-2">-->
+<!--          <el-icon><Edit /></el-icon>-->
+<!--          自定义模板-->
+<!--        </el-menu-item>-->
       </el-sub-menu>
       <el-menu-item index="/instructor/charts">
         <el-icon><PieChart /></el-icon>

@@ -137,6 +137,7 @@ const delSelected = () => {               //删除选中
     list.push(rows[i].sid)
   }
   post("/student/delete-student", list, (data) => {
+    store.student.studentList = store.student.studentList.filter(item => !list.includes(item.sid))
     ElMessage.success(data);
   })
 }
@@ -181,7 +182,7 @@ getList();
             method="post" :action="axios.defaults.baseURL + '/api/excel/student'">
           <el-button>Excel导入</el-button>
         </el-upload>
-        <el-button @click="studentDownload">名单导出</el-button>
+        <el-button style="margin-left: 12px" @click="studentDownload">名单导出</el-button>
         <div style="margin-left: auto; display: flex;width: 400px">
           <el-input :prefix-icon="Search" v-model="search.name" size="default" placeholder="搜索姓名"
                     style="width: 150px;margin-left: auto"/>

@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import {unauthorized, accessRole, deleteAccessRole, deleteAccessToken} from "@/net/index.js";
 import {ElMessage} from "element-plus";
+import Task from "@/views/afterLogin/main/taskList/Task.vue";
+import TaskList from "@/views/afterLogin/studentRole/taskList/TaskList.vue";
+import TaskDetail from "@/views/afterLogin/main/taskList/TaskDetail.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,17 +63,20 @@ const router = createRouter({
         {
           path: "task",
           name: "authorized-task",
-          component:() => import("@/views/afterLogin/main/taskList/Task.vue"),
+          // component:() => import("@/views/afterLogin/main/taskList/Task.vue"),
+          component: Task,
           children: [
             {
               path: "list",
               name: "authorized-list",
-              component: () => import("@/views/afterLogin/main/taskList/TaskList.vue")
+              // component: () => import("@/views/afterLogin/main/taskList/TaskList.vue")
+              component: TaskList
             },
             {
               path: "task-detail/:taskId",
               name: "authorized-task-detail",
-              component: () => import("@/views/afterLogin/main/taskList/TaskDetail.vue")
+              // component: () => import("@/views/afterLogin/main/taskList/TaskDetail.vue")
+              component: TaskDetail
             }
           ]
         },
@@ -91,11 +97,11 @@ const router = createRouter({
           name: "authorized-student-setting",
           component: () => import("@/views/afterLogin/studentRole/settings/StudentSettings.vue")
         },
-        // {
-        //   path: "logs",
-        //   name: "authorized-student-logs",
-        //   component: () => import("@/views/afterLogin/publicContent/LogList.vue")
-        // },
+        {
+          path: "logs",
+          name: "authorized-student-logs",
+          component: () => import("@/views/afterLogin/main/log/LogList.vue")
+        },
         {
           path: "task",
           name: "authorized-student-task",

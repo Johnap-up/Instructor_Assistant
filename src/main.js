@@ -12,6 +12,7 @@ import "echarts";
 
 
 axios.defaults.baseURL = "http://localhost:9856";
+// axios.defaults.baseURL = "http://47.101.203.178:9856";
 
 const app = createApp(App)
 app.use(router)
